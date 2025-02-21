@@ -136,53 +136,6 @@ export function DataTable({ data }: any) {
 
   const [inputValue, setInputValue] = useState('');
   let interval: any;
-  // const checkArrangStatus = async () => {
-  //   if (!datap?.arranged) {
-  //     // console.log('ข้อมูลไม่ถูกต้องหรือไม่พบการจัดเรียง');
-  //     return;
-  //   }
-  //   const id = datap.id;
-  //   // เช็คว่าทุก arrangement มีสถานะ 'จัดยาแล้ว' หรือไม่
-  //   const allArranged = data.every((arrangement: { arrang_status: any }) => {
-  //     const { arrang_status } = arrangement;
-  //     return arrang_status === 'จัดยาแล้ว' && arrang_status !== null && arrang_status !== '';
-  //   });
-
-  //   // ถ้าทุกสถานะเป็น 'จัดยาแล้ว'
-  //   if (allArranged) {
-  //     // console.log('ทุกสถานะจัดยาในข้อมูลที่จัดเรียงถูกต้อง');
-
-  //     const updatePrescriptionData = {
-  //       // prescrip_status: 'กำลังตรวจสอบ',
-  //       station: true,
-  //       queueStatus: 'กำลังตรวจสอบ',
-  //     };
-
-  //     // // อัปเดตข้อมูลที่นี่
-  //     await Promise.all([
-  //       updateApip?.mutateAsync({ id, ...updatePrescriptionData }),
-  //       // เพิ่มการอัปเดตอื่น ๆ ที่นี่
-  //     ]);
-  //     router.push('/medicine/station');
-  //   } else {
-  //     // console.log('มีสถานะจัดยาไม่ตรงตามเงื่อนไขในข้อมูลที่จัดเรียง');
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   checkArrangStatus(); // เรียกฟังก์ชันเช็คสถานะเมื่อ datap เปลี่ยน
-  // }, [datap]); // ทำงานเมื่อ datap เปลี่ยนแปลง
-
-  // useEffect(() => {
-  //   // หน่วงเวลา 1 วินาทีให้ข้อมูลจาก API มีเวลาโหลด
-  //   const timeout = setTimeout(() => {
-  //     if (data && data.length === 0) {
-  //       router.push('/medicine/station');
-  //     }
-  //   }, 3000); // หน่วงเวลา 1 วินาที
-
-  //   return () => clearTimeout(timeout); // ล้าง timeout เมื่อคอมโพเนนต์ถูก unmount
-  // }, [getApi?.data?.data, router, data]); // ใช้ getApi?.data?.data เป็น dependency
 
   useEffect(() => {
     if (data.length === 0) {
