@@ -1,0 +1,176 @@
+'use client';
+
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import Marquee from 'react-fast-marquee';
+
+import udhApi from '@/hooks/udhApi';
+// import { useRouterRefresh } from '@/hooks/use.refresh';
+import useApi from '@/hooks/useApi';
+import moph from '#/public/assets/udh/logo_MOPH.png';
+import logo from '#/public/assets/udh/LOGO2.png';
+
+import MainQueue from './main';
+
+const Queue = ({ params }: { params: { slug: string } }) => {
+  let interval: any;
+  const getApi = useApi({
+    key: ['queue'],
+    method: 'GET',
+    url: `queue/${params.slug}`,
+  })?.get;
+
+  const getUdhApi = udhApi({
+    key: ['med-info'],
+    method: 'GET',
+    url: `udh/quemed-info`,
+  })?.get;
+
+  const getDateApi = udhApi({
+    key: ['med-time'],
+    method: 'GET',
+    url: `udh/med-time`,
+  })?.get;
+
+  const payUdhQueueApi = udhApi({
+    key: ['med-pay'],
+    method: 'GET',
+    url: `udh/quemed-pay`,
+  })?.get;
+
+  const getMsgApi = useApi({
+    key: ['config'],
+    method: 'GET',
+    url: `medicine/configures`,
+  })?.get;
+
+  const postApi = useApi({
+    key: ['queue'],
+    method: 'POST',
+    url: `queue`,
+  })?.post;
+
+  const chock = `/assets/udh/UDH${params.slug}.png`;
+
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [queue, setQueue] = useState<[]>();
+  const [marquee, setMarquee] = useState<string>();
+  // const refresh = useRouterRefresh();
+
+  useEffect(() => {
+    getApi?.refetch();
+    getUdhApi?.refetch();
+    getMsgApi?.refetch();
+    payUdhQueueApi?.refetch();
+    getDateApi?.refetch();
+  }, [getApi, getDateApi, getMsgApi, getUdhApi, payUdhQueueApi]);
+
+  const today = currentTime.toLocaleString('th-TH', {
+    // year: 'numeric',
+    // month: 'long',
+    // day: 'numeric',
+    // weekday: 'long',
+    // hour: 'numeric',
+    // minute: 'numeric',
+    second: '2-digit',
+  });
+
+  useEffect(() => {
+    setInterval(() => setCurrentTime(new Date()), 1000);
+    // Implementing the setInterval method
+
+    // if (queue?.length !== undefined && payUdhQueueApi?.data?.length !== undefined) {
+
+    // interval = setInterval(() => {
+    //   setCurrentTime(new Date());
+    // }, 1000);
+    // // }
+    // // Clearing the interval
+    // return () => clearInterval(interval);
+  }, [today]);
+
+  useEffect(() => {
+    if (getUdhApi?.data && getMsgApi?.data) {
+      setQueue({ ...getUdhApi?.data?.data[0], queuePay: { pay: payUdhQueueApi?.data?.data[0] }, callMsg: { call: getMsgApi?.data?.data[0]?.hospital_call_message } });
+      setMarquee(getMsgApi?.data?.data[0]?.hospital_message);
+    }
+  }, [getMsgApi?.data, getUdhApi?.data, payUdhQueueApi?.data?.data]);
+
+  useEffect(() => {
+    // Implementing the setInterval method
+
+    if (queue) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      interval = setInterval(() => {
+        postApi?.mutateAsync(queue);
+        window.location.reload();
+        // refresh()
+        //   .then(() => {
+        //     // Do something when refresh is done
+        //     getApi?.refetch();
+
+        //     // getDateApi?.refetch();
+        //   });
+      }, 2000);
+    }
+    // Clearing the interval
+    return () => clearInterval(interval);
+  }, [queue, marquee]);
+
+  return (
+    <div className="flex h-screen flex-col">
+      <header className="h-1/5 bg-pink-500 text-center">
+        <br />
+        <div className="m-1 grid grow grid-cols-5 grid-rows-5 gap-2 text-white">
+          <div className="row-span-3 mt-[-26px] flex place-items-baseline justify-center">
+            <Image src={logo} alt="Logo" width={140} height={140} />
+          </div>
+          <div className="col-span-2 row-span-2 mr-[-80px] mt-[-20px] flex place-items-baseline justify-center md:text-4xl lg:text-6xl xl:text-7xl 2xl:text-8xl">
+            <big>
+              <b>ช่องบริการ</b>
+            </big>
+            {/* {params.slug} */}
+          </div>
+          <div className="z-20 col-start-4 row-span-3 -ml-0  mt-[-25px]">
+            <Image src={chock} alt="Logo" width={170} height={170} />
+          </div>
+          <div className="col-span-2 col-start-2 row-start-3 mr-[-75px]  mt-[-25px] flex justify-center text-amber-100 md:text-xl lg:text-2xl ">
+            <b>
+              <div suppressHydrationWarning>
+                {getDateApi?.data?.data}
+                :
+                {today}
+              </div>
+            </b>
+          </div>
+          <div className="col-start-5 row-span-3 row-start-1 mt-[-26px] flex place-items-baseline  justify-center">
+            <Image src={moph} alt="Logo" width={140} height={140} />
+          </div>
+        </div>
+      </header>
+      {(() => {
+        if (params.slug === '32') {
+          return (
+            <main className="m-1 flex h-3/4 justify-center bg-pink-100 text-center text-sky-700">
+              <div className="flex h-full items-center">
+
+                <h1 className="sm:text-[8rem] md:text-[12] lg:text-[14rem] 2xl:text-[20rem]"><b>ยื่นใบสั่งยา</b></h1>
+
+              </div>
+            </main>
+          );
+        } else {
+          return <MainQueue data={getApi?.data} />;
+        }
+      })()}
+
+      <footer className="fixed inset-x-0 bottom-0 h-8 bg-pink-500 text-center text-2xl text-white">
+        <Marquee direction="left" autoFill={false} speed={50}>
+          {marquee}
+        </Marquee>
+      </footer>
+    </div>
+  );
+};
+
+export default Queue;

@@ -1,0 +1,532 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions", "relationJoins"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                    String                 @id @default(cuid())
+  email                 String                 @unique
+  emailVerified         DateTime?
+  name                  String
+  image                 String?
+  mobile                String?
+  address               String?
+  bio                   String?
+  password              String
+  status                Status                 @default(PENDING_VERIFICATION)
+  confirmed             Boolean                @default(false)
+  blocked               Boolean                @default(false)
+  isTwoFactorEnabled    Boolean     blocked               Boolean                @default(false)            @default(false)
+  twoFactorConfirmation TwoFactorConfirmation?
+
+  role      Role?      @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  roleId    String?
+  configure Configure? @relation(fields: [config], references: [id], onDelete: Restrict)
+  config    String?
+
+  accounts     Account[]
+  cabinet      Cabinet[]
+  medicine     Medicine[]
+  arranged     Arranged[]
+  prescription Prescription[]
+  queue        Queue[]
+  basket       Basket[]
+  session      Session[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Session {
+  id           String    @id @default(cuid())
+  userId       String?   @map("user_id")
+  sessionToken String    @unique @map("session_token")
+  accessToken  String?   @map("access_token")
+  expires      DateTime
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @updatedAt
+  user         User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model VerificationToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model PasswordResetToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model TwoFactorToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model TwoFactorConfirmation {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  type        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users             User[]
+  permissions       Permission[]
+  clientPermissions ClientPermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(cuid())
+  name        String
+  method      Method
+  route       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  role Role[]
+
+  @@unique([method, route])
+  @@map("permissions")
+}
+
+model ClientPermission {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  sort        Int
+  menu        String
+  path        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  role Role[]
+
+  @@map("client_permissions")
+}
+
+model Configure {
+  id                    String    @id @default(cuid())
+  hospital_code         String?   @db.VarChar(13) /// รหัสโรงพยาบาล
+  hospital_logo         String?   @db.Text
+  hospital_initial      String?   @db.VarChar(7) /// ชื่อย่อ
+  hospital_nameTH       String? /// ชื่อภาษาไทย
+  hospital_nameEN       String? /// ชื่อภาษาอังกฤษ
+  hospital_time         DateTime? @db.Time() // จัดยานอกเวลา
+  hospital_date         DateTime? @db.Date /// วันที่ปัจจุบันสำหรับตรวจสอบคิว
+  hospital_queue_day    Int?      @default(1) @db.SmallInt /// ลำดับประจำวัน
+  hospital_status       Boolean?  @default(false) // สถานะการใช้งาน
+  hospital_station      String? /// สถานีทำงาน
+  hospital_channel      Int?      @default(0) @db.SmallInt /// จำนวนช่องจ่าย
+  hospital_offTime      Boolean   @default(false)
+  hospital_message      String?
+  hospital_call_message String?
+  hospital_voice        String?
+  users                 User[]
+
+  @@map("configures")
+}
+
+model Cabinet {
+  id               String    @id @default(cuid())
+  cabinet          String? /// ประเภทตู้ยา
+  cabinet_size     String? /// ขนาดตู้
+  mqtt_topic       String? /// หัวข้อที่ส่งข้อมูล
+  plcId            String? /// รหัส plc ส่งข้อมูล
+  storage_station  String? /// ที่ตั้งอุปกรณ์ทำงาน
+  storage_location String? /// ที่ตั้ง Station
+  storage_position String? /// ตำแหน่งช่องจัดเก็บยา
+  storage_capacity Int? /// ความจุช่องเก็บ ตามหน่วยนับยา
+  userLevel        String? /// ระดับผู้ใช้เปิดตู้
+  cabinet_note     String?   @db.Text
+  hospitalId       String?   @map("hospital_id")
+  userId           String?   @map("user_id")
+  HouseId          String? /// บ้านเลขที่
+  medicineId       String?   @map("medicine_id")
+  storageMax       Int?      @db.SmallInt /// จำนวนยาจัดเก็บ สูงสุด  
+  storageMin       Int?      @db.SmallInt /// ความจุช่องเก็บ ต่ำสุด
+  storageAdd       Int? /// เพิ่มสสต๊อกยา 
+  storagePay       Int? /// จำนวนจ่ายยา  
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime? @updatedAt
+  prescripId       String?   @map("prescrip_id") /// รหัสคัดกรอง
+
+  user     User?          @relation(fields: [userId], references: [id]) /// เชื่อมโยงตู้จัดเก็บยา
+  medicine Medicine?      @relation(fields: [medicineId], references: [id]) /// เชื่อมโยงยา
+  // prescrip Prescription[]
+  // medicine Medicine[]
+
+  @@map("cabinets")
+}
+
+model Medicine {
+  id                   String   @id @default(cuid())
+  medicineCode         String   @unique @map("medicine_id") /// รหัสยา
+  medicineImage1       String? /// ภาพยา1
+  medicineImage2       String? /// ภาพยา2
+  medicineImage3       String? /// ภาพยา3
+  name                 String? /// ชื่อยา + ขนาด + หน่วย
+  medicineName_th      String?  @db.VarChar(250) /// ชื่อยาภาษาไทย
+  medicineName_en      String?  @db.VarChar(250) /// ชื่อยาภาษาอังกฤษ
+  medicinePackageSize  String   @db.VarChar(20) /// ขนาดบรรจุ (TAB)
+  medicine_method      String?  @db.VarChar(50) /// วิธีใช้ยา
+  medicineMethodEn     String?  @db.VarChar(50) /// วิธีใช้ยาอังกฤษ
+  medicine_condition   String?  @db.VarChar(20) /// เงื่อนไขการรับระทาน ครั้งละ
+  medicine_unit_eating String?  @db.VarChar(20) /// หน่วยรับทาน
+  medicineUnitEatingEn String?  @db.VarChar(20) /// หน่วยรับทานอังกฤษ
+  medicine_frequency   String?  @db.VarChar(200) /// ความถี่รับทาน
+  medicineFrequencyEn  String?  @db.VarChar(200) /// ความถี่รับทานอังกฤษ
+  medicine_advice      String?  @db.VarChar(200) /// คำแนะนำหรือคำสั่ง
+  medicineAdviceEn     String?  @db.VarChar(200) /// คำแนะนำหรือคำสั่งอังกฤษ
+  medicine_value       Decimal? @db.Decimal(4, 0) /// มูลค่ายา
+  medicineNote         String? /// ข้อมูลอื่นๆ
+  medicineStatus       Boolean? @default(true)
+  storageMax           Int?     @db.SmallInt /// จำนวนยาจัดเก็บ สูงสุด  
+  storageMin           Int?     @db.SmallInt /// ความจุช่องเก็บ ต่ำสุด
+  storageAdd           Int? /// เพิ่มสสต๊อกยา 
+  medicinetype         String?  @db.VarChar(5)///typeยา
+  hospitalId String?   @map("hospital_id")
+  userId     String?   @map("user_id")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  user     User?      @relation(fields: [userId], references: [id]) /// เชื่อมโยงผู้ใช้งาน
+  cabinet  Cabinet[]
+  arranged Arranged[]
+
+  @@map("medicines")
+}
+
+model Arranged {
+  id                   String    @id @default(cuid())
+  hospitalId           String?   @map("hospital_id") /// รหัสโรงพยาบาล
+  prescripId           String?   @map("prescrip_id") /// รหัสคัดกรอง
+  medicineId           String?   @map("medicine_id") /// รหัสยา
+  medicineCode         String? /// รหัสโค้ด
+  medicine_name        String? /// ชื่อยา
+  medicine_amount      Int?      @db.SmallInt /// จำนวนจ่าย #accQut
+  med_detail           String? /// ข้อมูลการใช้ยา
+  med_detail1          String? /// ข้อมูลการใช้ยาฉบับย่อ
+  dispcause            String? /// F
+  medsts               String? /// สถานะยา 0 ยาใหม่
+  lastDisp              String? //เวลาจ่ายยาแล้ว
+  prod_type            String? /// ข้อมูลประเภทยา
+  medicinePackageSize  String    @db.VarChar(20) /// ขนาดบรรจุ (TAB) #unit
+  medicine_amount_edit Int?      @db.SmallInt /// จำนวนแก้ไข
+  medicine_method      String?   @db.VarChar(50) /// วิธีใช้ยา
+  medicineMethodEn     String?   @db.VarChar(50) /// วิธีใช้ยาอังกฤษ
+  medicine_condition   String?   @db.VarChar(20) /// เงื่อนไขการรับระทาน ครั้งละ
+  medicine_unit_eating String?   @db.VarChar(20) /// หน่วยรับทาน
+  medicineUnitEatingEn String?   @db.VarChar(20) /// หน่วยรับทานอังกฤษ เปลี่ยนเป็น addr ตู้ยา
+  medicine_frequency   String?   @db.VarChar(200) /// ความถี่รับทาน
+  medicineFrequencyEn  String?   @db.VarChar(200) /// ความถี่รับทานอังกฤษ //ฉลากยาเสริม
+  medicine_advice      String?   @db.VarChar(200) /// คำแนะนำหรือคำสั่ง
+  medicineAdviceEn     String?   @db.VarChar(200) /// คำแนะนำหรือคำสั่งอังกฤษ
+  medicine_value       Decimal?  @db.Decimal(4, 0) /// มูลค่ายา
+  medicine_reason      String? /// หมายเหตุ
+  user_arrang          String? /// รหัสผู้จัดยา
+  user_arrang_time     DateTime? /// วันเวลาจัดยา
+  user_double_check    String? /// รหัสผู้ตรวจสอบ
+  user_check_time      DateTime? /// วันเวลาตรวจสอบยา
+  user_dispense        String? /// รหัสผู้จ่ายยา
+  user_dispense_time   DateTime? /// วันเวลาตรวบสอบยา
+  arrang_status        String? /// สถานการจัด 0:ยังไม่จัด 1:จัดแล้ว 2:ตรวจสอบแล้ว 3:ยืนยันอีกครั้ง 4:จัดใหม่ 5:ยกเลิก
+  print_status         Int?      @default(0) @db.SmallInt /// สถานะปริ้น
+  labelNo              String?
+  error00              String?
+  error01              String?
+  error02              String?
+  error03              String?
+  error04              String?
+  error05              String?
+  error06              String?
+  error07              String?
+  error08              String?
+  error09              String?
+  error10              String?
+  checkComment         String?   @db.Text /// ข้อมูลสำหรับตรวจสอบการจัดยา
+  barcode              String? //รหัสบาร์โค๊ด
+  userId               String?   @map("user_id") /// รหัสผู้ใช้สร้าง
+  basketId             String?
+  autoLoad             String? /// id auto load
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime? @updatedAt
+
+  user     User?         @relation(fields: [userId], references: [id]) /// เชื่อมโยงตู้จัดเก็บยา
+  prescrip Prescription? @relation(fields: [prescripId], references: [id]) /// เชื่อมโยงไปยังรหัสคัดกรอง
+  medicine Medicine?     @relation(fields: [medicineId], references: [id]) /// เชื่อมโยงไปยังรหัสยา
+  basket   Basket?       @relation(fields: [basketId], references: [id]) /// เชื่อมโยงไปยังรหัสตะกร้า
+  autoload AutoLoad?     @relation(fields: [autoLoad], references: [id]) /// เชื่อมโยงไปยังรหัสตะกร้า
+
+  @@map("arrangeds")
+}
+
+model Prescription {
+  id               String     @id @default(cuid())
+  prescripCode     String?    @db.VarChar(20) /// เลขที่เอกสาร
+  urgent           Boolean?   @default(false)
+  basket_num       Int?       @default(1) @db.SmallInt /// จำนวนตะกร้า
+  hnCode           String? /// รหัส hn โรงพยาบาล
+  vnCode           String? /// รหัส vn ห้องตรวจ
+  queue_code       String? /// คิวที่ได้รับจากโรงพยาบาล
+  queue_num        String? /// คิวตามลำดับการคัดกรอง
+  doctor_names     String? /// ชื่อแพทย์
+  lap_name         String? /// ห้องแล็ป
+  dept_name        String? /// ห้องตรวจ
+  dept_code        String? ///รหัสห้องตรวจ
+  drug_allergy     String? /// ประวัติการแพ้ยา
+  pay_type         String? /// สิทธิ์การรักษา
+  queue_random     String? /// คิวที่ระบบสุ่มให้
+  queue_type       String?    @db.VarChar(7)
+  full_name        String? /// ชื่อ-สกุลผู้ป่วย
+  medicine_total   Int?       @db.SmallInt /// จำนวนยาทั้งหมดในใบสั่งยา
+  medicine_price   Decimal?   @db.Decimal(9, 2) /// จำนวนเงินที่ต้องชำระ
+  medicine_service Decimal?   @db.Decimal(9, 2) /// จำนวนเงินค่าบริการ
+  prescrip_status  String? /// สถานการจัด 0:รอจับคู่ตะกร้า 1:กำลังจัดยา 2:กำลังตรวจสอบยา 3:กำลังจ่ายยา 4:จัดใหม่ 5:ยกเลิก 6:
+  delivery         String? /// รูปแบบการรับยา 0:โรงพยาบาล 1:ห้างเซ็ลทัลพาซ่าอุดรธานี 2:Telemed 3:ร้านขายยา
+  startTime        DateTime? /// วันเวลาเริ่มจัดยา
+  arrangTime       DateTime? /// วันเวลาจัดยาเสร็จ
+  userDoubleCheck  String? /// รหัสผู้ตรวจสอบ
+  checkTime        DateTime? /// วันเวลาตรวจสอบยา
+  userDispense     String? /// รหัสผู้จ่ายยา
+  userDispenseTime DateTime? /// วันเวลาจ่ายยา
+  restBasket       String? /// รหัสผู้พักยา
+  userRestBasket   DateTime? /// วันเวลาพักยา
+  prescrip_comment String?    @db.Text /// ข้อมูลสถานะใบสั่งยา
+  prescripAdd      Boolean?   @default(false) /// เพิ่มใบสั่งยาเอง
+  hospitalId       String?    @map("hospital_id")
+  userId           String?    @map("user_id")
+  basketId         String?
+  autoLoad         String? ///  id auto load 
+  dateQueue        DateTime   @default(now()) @db.Date
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime?  @updatedAt
+  channel          Int?       @default(0) @db.SmallInt /// ช่องจ่ายยา
+  channel2         Int?       @default(0) @db.SmallInt /// ช่องจ่ายคิว
+  user             User?      @relation(fields: [userId], references: [id]) /// เชื่อมโยงตู้จัดเก็บยา
+  basket           Basket?    @relation(fields: [basketId], references: [id]) /// เชื่อมโยงไปยังรหัสตะกร้า
+  arranged         Arranged[]
+  queue            Queue[]
+  autoload         AutoLoad[]
+  // cabinet          Cabinet?   @relation(fields: [cabinetId], references: [id]) /// เชื่อมโยงตู้จัดเก็บยา
+
+  @@map("sreenings")
+}
+
+model Queue {
+  id          String  @id @default(cuid())
+  hospitalId  String? @map("hospital_id") /// รหัสโรงพยาบาล
+  userId      String? @map("user_id") /// รหัสผู้ใช้งาน
+  prescripId  String? @map("prescrip_id") /// รหัสคัดกรอง
+  regNo       String? /// ลำดับลงทะเบียน
+  hnCode      String? /// รหัส hn โรงพยาบาล
+  vnCode      String? /// รหัส vn ห้องตรวจ
+  fullName    String? /// ชื่อ-สกุลผู้ป่วย
+  queueCode   String? /// คิวที่ได้รับจากโรงพยาบาล
+  queueNum    String? /// คิวตามลำดับการคัดกรอง
+  queueRandom String? /// คิวที่ระบบสุ่มให้
+  queueStatus Int?    @default(0) @db.SmallInt /// สภานะเรียกคิว 0:รอเรียก 1:เรียกคิว 2:เรียกซ้ำ  
+  queueCounts Int?    @default(0) @db.SmallInt /// จำนวนครั้งที่เรียก
+  basketShelf String? @db.VarChar(20) /// รหัสช่องพักยา                
+  channel     Int     @db.SmallInt /// ช่องจ่ายยา
+  channel2    Int?    @default(0) @db.SmallInt /// ช่องจ่ายคิว
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  user     User?         @relation(fields: [userId], references: [id]) /// เชื่อมโยงตู้จัดเก็บยา
+  prescrip Prescription? @relation(fields: [prescripId], references: [id])
+
+  @@map("queues")
+}
+
+model QueueMsg {
+  id          String    @id @default(cuid())
+  callMsg     String? /// คิวที่ได้รับจากโรงพยาบาล
+  queueStatus Int?      @default(0) @db.SmallInt /// สภานะเรียกคิว 0:รอเรียก 1:เรียกคิว 2:เรียกซ้ำ  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+}
+
+model MedicineBasket {
+  id               String  @id @default(cuid())
+  hospitalId       String? @map("hospital_id") /// รหัสโรงพยาบาล
+  loadId           String? @map("load_id") /// หมายช่อง auto load
+  prescripId       String? @map("prescrip_id") /// รหัสคัดกรอง
+  medicineId1      String? @map("medicine_id1") /// รหัสยา1
+  medicineAmount1  Int?    @db.SmallInt /// จำนวนจัด 1
+  autoAmount1      Int?    @db.SmallInt /// จำนวน auto 1
+  medicineId2      String? @map("medicine_id2") /// รหัสยา2
+  medicineAmount2  Int?    @db.SmallInt /// จำนวนจัด 2
+  autoAmount2      Int?    @db.SmallInt /// จำนวน auto
+  medicineId3      String? @map("medicine_id3") /// รหัสยา3
+  medicineAmount3  Int?    @db.SmallInt /// จำนวนจัด 3
+  autoAmount3      Int?    @db.SmallInt /// จำนวน auto
+  medicineId4      String? @map("medicine_id4") /// รหัสยา4
+  medicineAmount4  Int?    @db.SmallInt /// จำนวนจัด 4
+  autoAmount4      Int?    @db.SmallInt /// จำนวน auto
+  medicineId5      String? @map("medicine_id5") /// รหัสยา5
+  medicineAmount5  Int?    @db.SmallInt /// จำนวนจัด 5
+  autoAmount5      Int?    @db.SmallInt /// จำนวน auto
+  medicineId6      String? @map("medicine_id6") /// รหัสยา6
+  medicineAmount6  Int?    @db.SmallInt /// จำนวนจัด 6
+  autoAmount6      Int?    @db.SmallInt /// จำนวน auto
+  medicineId7      String? @map("medicine_id7") /// รหัสยา
+  medicineAmount7  Int?    @db.SmallInt /// จำนวนจัด 7
+  autoAmount7      Int?    @db.SmallInt /// จำนวน auto
+  medicineId8      String? @map("medicine_id8") /// รหัสยา
+  medicineAmount8  Int?    @db.SmallInt /// จำนวนจัด 8
+  autoAmount8      Int?    @db.SmallInt /// จำนวน auto
+  medicineId9      String? @map("medicine_id9") /// รหัสยา
+  medicineAmount9  Int?    @db.SmallInt /// จำนวนจัด 9
+  autoAmount9      Int?    @db.SmallInt /// จำนวน auto
+  medicineId10     String? @map("medicine_id10") /// รหัสยา
+  medicineAmount10 Int?    @db.SmallInt /// จำนวนจัด 10
+  autoAmount10     Int?    @db.SmallInt /// จำนวน auto
+  medicineId11     String? @map("medicine_id11") /// รหัสยา
+  medicineAmount11 Int?    @db.SmallInt /// จำนวนจัด 11
+  autoAmount11     Int?    @db.SmallInt /// จำนวน auto
+  medicineId12     String? @map("medicine_id12") /// รหัสยา
+  medicineAmount12 Int?    @db.SmallInt /// จำนวนจัด 12
+  autoAmount12     Int?    @db.SmallInt /// จำนวน auto
+  medicineId13     String? @map("medicine_id13") /// รหัสยา
+  medicineAmount13 Int?    @db.SmallInt /// จำนวนจัด 13
+  autoAmount13     Int?    @db.SmallInt /// จำนวน auto
+  medicineId14     String? @map("medicine_id14") /// รหัสยา
+  medicineAmount14 Int?    @db.SmallInt /// จำนวนจัด 13
+  autoAmount14     Int?    @db.SmallInt /// จำนวน auto
+  medicineId15     String? @map("medicine_id15") /// รหัสยา
+  medicineAmount15 Int?    @db.SmallInt /// จำนวนจัด 13
+  autoAmount15     Int?    @db.SmallInt /// จำนวน auto
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  autoload AutoLoad? @relation(fields: [loadId], references: [id]) /// เชื่อมโยงไปยังรหัสตะกร้า
+  // prescription Prescription? @relation(fields: [prescripId], references: [id]) /// เชื่อมโยงไปยังรหัสตะกร้า
+
+  @@map("medicine_baskets")
+}
+
+model AutoLoad {
+  id             String           @id @default(cuid())
+  mqtt_topic     String /// หัวข้อที่ส่งข้อมูล
+  plcId          String? /// รหัส plc ส่งข้อมูล
+  load_number    Int?             @default(0) @db.SmallInt /// หมายช่อง auto load
+  drug_count     Int?             @default(0) @db.SmallInt
+  load_status    Boolean?         @default(false) @db.Boolean /// สถานะช่อง 0:ว่าง 1:ไม่ว่าง
+  rfid_code      String? /// รหัส RFID
+  load_diff      Int?             @default(0) @db.SmallInt /// จำนวนต่างกัน
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime?        @updatedAt
+  basketId       String? /// รหัสตะกร้า
+  basket         Basket?          @relation(fields: [basketId], references: [id]) /// เชื่อมโยงไปยังรหัสตะกร้า
+  orderId        String? /// รหัสใบสั่งยา
+  prescrip       Prescription?    @relation(fields: [orderId], references: [id])
+  medicineBasket MedicineBasket[]
+  arranged       Arranged[]
+
+  @@map("auto_loads")
+}
+
+model Basket {
+  id            String    @id @default(cuid())
+  hospitalId    String?   @map("hospital_id") /// รหัสโรงพยาบาล
+  userId        String?   @map("user_id") /// รหัสผู้ใช้งาน
+  qrCode        String?   @db.VarChar(255) /// รหัสตะกร้า
+  name          String? /// ชื่อตะกร้า
+  basket_color  String?   @db.VarChar(7) /// รหัสสีตะกร้า
+  basket_status Boolean?  @default(true) @db.Boolean /// สถานะตะกร้า True:พร้อมใช้งาน False:ไม่พร้อมใช้งาน
+  basket_type   String? /// ประเภทตะกร้า ขึ้นต้นด้วย A, B, C, D ตามด้วยเลขคิว
+  basket_floor  Int?      @db.SmallInt
+  basket_match  Boolean?  @default(false) @db.Boolean /// สถานะจับคู่ตะกร้า
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+
+  user         User?          @relation(fields: [userId], references: [id]) /// เชื่อมโยงตู้จัดเก็บยา
+  autoload     AutoLoad[]
+  prescription Prescription[]
+  arranged     Arranged[]
+
+  @@map("baskets")
+}
+
+model Plc {
+  id        String  @id @default(cuid())
+  queueType String?
+  channel1  Boolean?  @default(false) @db.Boolean /// ปิดเปิดช่องจ่ายยา 1
+  channel2  Boolean?  @default(false) @db.Boolean /// ปิดเปิดช่องจ่ายยา 2
+  channel3  Boolean?  @default(false) @db.Boolean /// ปิดเปิดช่องจ่ายยา 3
+  channel4  Boolean?  @default(false) @db.Boolean /// ปิดเปิดช่องจ่ายยา 4
+}
+
+enum Method {
+  GET
+  POST
+  PUT
+  DELETE
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  PENDING_VERIFICATION
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}

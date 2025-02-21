@@ -1,0 +1,69 @@
+
+.page {
+    width: 80mm;
+    min-height:50mm;
+    padding: 0;
+    margin: 0 auto;
+    /* border: 1px #d3d3d3 solid; */
+    /* border-radius: 5px; */
+    background: white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+  .subpage {
+    padding: 5px;
+    /* border: 1px black solid;
+    height: 2mm; */
+    /* outline: 2cm #ffeaea solid; */
+  }
+  
+  @page {
+    size: 70mm 40mm;
+    margin: 0;
+  }
+  
+  @media print {
+    .page {
+      margin: 0;
+      border: initial;
+      border-radius: initial;
+      width: initial;
+      min-height: initial;
+      box-shadow: initial;
+      background: initial;
+      page-break-after: always;
+    }
+  }
+  .page {
+      width: 80mm;
+      min-height:50mm;
+      padding: 0;
+      margin: 0 auto;
+      /* border: 1px #d3d3d3 solid; */
+      /* border-radius: 5px; */
+      background: white;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+    .subpage {
+      padding: 0.3s;
+      /* border: 1px black solid;
+      height: 256mm; */
+      /* outline: 2cm #ffeaea solid; */
+    }
+    
+    @page {
+      size: 80mm 50mm;
+      margin: 5mm;
+    }
+    
+    @media print {
+      .page {
+        margin: 5mm;
+        border: initial;
+        border-radius: initial;
+        width: initial;
+        min-height: initial;
+        box-shadow: initial;
+        background: initial;
+        page-break-after: always;
+      }
+    }

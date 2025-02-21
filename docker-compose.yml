@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+    service1:
+      build: .
+      command: npm start
+      volumes:
+        - .:/usr/app/
+        - /usr/app/node_modules
+      ports:
+        - "8082:8082"
