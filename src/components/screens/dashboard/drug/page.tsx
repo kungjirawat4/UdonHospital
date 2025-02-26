@@ -5,7 +5,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Image } from '@nextui-org/react';
 import type { Medicine } from '@prisma/client';
-import { useLocale, useTranslations } from 'next-intl';
+// import { useLocale, useTranslations } from 'next-intl';
 import type { FormEvent } from 'react';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -50,8 +50,8 @@ const FormSchema = z.object({
 });
 
 const Page = () => {
-  const t = useTranslations();
-  const locale = useLocale();
+  // const t = useTranslations();
+  // const locale = useLocale();
   const [page, setPage] = useState(1);
   const [limit] = useState(50);
   const [id, setId] = useState<string | null>(null);

@@ -456,7 +456,7 @@ import 'dotenv/config';
 
 export let io: SocketIOServer | undefined;
 
-const { NEXT_PUBLIC_API_URL, NEXT_SERVER_API_URL } = process.env;
+const { NEXT_PUBLIC_API_URL } = process.env;
 
 const initSocketSingleton = () => {
   if (!io) {
@@ -489,7 +489,7 @@ const initSocketSingleton = () => {
       cron.schedule("* * * * * 1,2,3,4,5", async function () {
         await Promise.all([
           socket.emit('todate', toDay), // ส่งวันที่ไปยัง client
-          await axios.get(`${NEXT_SERVER_API_URL}/udh/med-queue`)  // เรียกคิวแสดงแสดงทุกๆ 1 วินาที
+          await axios.get(`${NEXT_PUBLIC_API_URL}/udh/med-queue`)  // เรียกคิวแสดงแสดงทุกๆ 1 วินาที
             .then(res => {
               if (res.status === 200) {
                 socket.emit('queue', res?.data); // ส่งไปยัง client
@@ -517,7 +517,7 @@ const initSocketSingleton = () => {
 
       cron.schedule("*/3 * 1-21 * * 1,2,3,4,5", async function () { // ทุกๆ 3 วินาที ตั้งแต่ชั่วโมงที่ 1-21 ในวันจันทร์-วันศุกร์
         await Promise.all([
-          await axios.get(`${NEXT_SERVER_API_URL}/udh/quemed-info`) // ดึงข้อมูลคิวโรงพยาบาล
+          await axios.get(`${NEXT_PUBLIC_API_URL}/udh/quemed-info`) // ดึงข้อมูลคิวโรงพยาบาล
             .then(async res => {
               if (res.status === 200) {
                 const data = res?.data?.data
@@ -561,7 +561,7 @@ const initSocketSingleton = () => {
               // console.error(error)
             }),
 
-          await axios.get(`${NEXT_SERVER_API_URL}/udh/quemed-pay`) // ดึงข้อมูลเรียกคิวโรงพยาบาล
+          await axios.get(`${NEXT_PUBLIC_API_URL}/udh/quemed-pay`) // ดึงข้อมูลเรียกคิวโรงพยาบาล
             .then(async res => {
               if (res.status === 200) {
                 const data = res?.data?.data

@@ -65,14 +65,15 @@ export default class App {
 		this.express.use(fileUpload({ createParentPath: true }));        
 		// add multiple cors options as per your use
 		const corsOptions = {
-			origin: [
-				'http://localhost:3000',
-				'http://localhost:8082/',
-				'http://example.com/',
-				'http://127.0.0.1:8082',
-				'http://172.16.2.254:3000',
-				'http://192.168.15.41:3000',
-			],
+			// origin: [
+			// 	'http://localhost:3000',
+			// 	'http://localhost:8082/',
+			// 	'http://example.com/',
+			// 	'http://127.0.0.1:8082',
+			// 	'http://172.16.2.254:8080',
+			// 	'http://172.16.2.254:3000',
+			// ],
+			origin: '*', 
 		};
 		this.express.use(cors(corsOptions));
 	}

@@ -129,7 +129,7 @@ const Profile = () => {
   });
 
   return (
-    <div className='w-[97%] bg-white p-3 mt-2'>
+    <div className='w-[97%] p-3 mt-2'>
       {updateApi?.isError && <Message value={updateApi?.error} />}
 
       {getApi?.isError && <Message value={getApi?.error} />}

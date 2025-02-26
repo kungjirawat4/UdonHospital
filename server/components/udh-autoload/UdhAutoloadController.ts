@@ -47,6 +47,11 @@ export default class UdhAutoloadController extends BaseController {
 				handler: this.postBasket.bind(this),
 			},
 			{
+				path: '/cabinet/:id/:station',
+				method: 'get',
+				handler: this.getCabinet.bind(this),
+			},
+			{
 				path: '/cabinet',
 				method: 'post',
 				handler: this.postCabinet.bind(this),
@@ -159,96 +164,99 @@ export default class UdhAutoloadController extends BaseController {
 	}
 
 
-	/**
+/**
 	 *
 	 * @param req
 	 * @param res
 	 * @param nextprisma
 	 */
-	public async getPrescription(
-		req: Request,
-		res: Response,
-		next: NextFunction,
-	): Promise<void> {
-		try {
-			const [typeA, typeC] = await Promise.all([
-				 await db.prescription.findMany({
-					where: { queue_type: 'A', 
-						AND: [
-							{ createdAt: { gte: new Date(dayjsStartDate.format('YYYY-MM-DDTHH:mm:ss')) } },
-							{ createdAt: { lte: new Date(dayjsEndDate.format('YYYY-MM-DDTHH:mm:ss')) } },
-							{ basketId: null },
-							{ queue_random: null },
-							{ prescrip_status: 'รอจับคู่ตะกร้า' },
-						]
-					},
-					select: {
-						id: true,
-						queue_type: true,
-						hnCode: true,
-						queue_code: true,
-						queue_num: true,
-						queue_random: true
-					},
-					take: 7,
-					orderBy: [{ urgent: 'desc' }, { queue_code: 'asc' }, { createdAt: 'asc' }],
+public async getPrescription(
+	req: Request,
+	res: Response,
+	next: NextFunction,
+): Promise<void> {
+	try {
+		const [typeAB, typeCD] = await Promise.all([
+			 await db.prescription.findMany({
+				where: { 
+					OR: [ {queue_type: 'A'}, { queue_type: 'B'}], 
+					AND: [
+						{ createdAt: { gte: new Date(dayjsStartDate.format('YYYY-MM-DDTHH:mm:ss')) } },
+						{ createdAt: { lte: new Date(dayjsEndDate.format('YYYY-MM-DDTHH:mm:ss')) } },
+						{ basketId: null },
+						{ queue_random: null },
+						{ prescrip_status: 'รอจับคู่ตะกร้า' },
+					]
+				},
+				select: {
+					id: true,
+					queue_type: true,
+					hnCode: true,
+					queue_code: true,
+					queue_num: true,
+					queue_random: true
+				},
+				take: 9,
+				orderBy: [{ urgent: 'desc' }, { queue_code: 'asc' }, { createdAt: 'asc' }],
+			 }),
+			await db.prescription.findMany({
+				where: {
+					OR: [ {queue_type: 'C'}, { queue_type: 'D'}], 
+					AND: [
+						{ createdAt: { gte: new Date(dayjsStartDate.format('YYYY-MM-DDTHH:mm:ss')) } },
+						{ createdAt: { lte: new Date(dayjsEndDate.format('YYYY-MM-DDTHH:mm:ss')) } },
+						{ basketId: null },
+						{ queue_random: null },
+						{ prescrip_status: 'รอจับคู่ตะกร้า' },
+					]
+				},
+				select: {
+					id: true,
+					queue_type: true,
+					hnCode: true,
+					queue_code: true,
+					queue_num: true,
+					queue_random: true
+				},
+				take: 1,
+				orderBy: [{ urgent: 'desc' }, { queue_code: 'asc' }, { createdAt: 'asc' }],
+			 })
+			 
+		])
+		if (typeAB.length > 1 && typeCD.length > 1) {
+			await Promise.all([
+				typeAB.map(async (item, index) => {
+					await db.prescription.update({
+						where: { id: item.id },
+						data: {
+							queue_random: String(new Date().getTime() + index)
+						}
+					})
 				}),
-				await db.prescription.findMany({
-					where: { queue_type: 'C',
-						AND: [
-							{ createdAt: { gte: new Date(dayjsStartDate.format('YYYY-MM-DDTHH:mm:ss')) } },
-							{ createdAt: { lte: new Date(dayjsEndDate.format('YYYY-MM-DDTHH:mm:ss')) } },
-							{ basketId: null },
-							{ queue_random: null },
-							{ prescrip_status: 'รอจับคู่ตะกร้า' },
-						]
-					},
-					select: {
-						id: true,
-						queue_type: true,
-						hnCode: true,
-						queue_code: true,
-						queue_num: true,
-						queue_random: true
-					},
-					take: 3,
-					orderBy: [{ urgent: 'desc' }, { queue_code: 'asc' }, { createdAt: 'asc' }],
+				typeCD.map(async (item, index) => {
+					await db.prescription.update({
+						where: { id: item.id },
+						data: {
+							queue_random: String(new Date().getTime() + index)
+						}
+					})
 				})
 			])
-			if (typeA && typeC) {
-				await Promise.all([
-					typeA.map(async (item, index) => {
-						await db.prescription.update({
-							where: { id: item.id },
-							data: {
-								queue_random: String(new Date().getTime() + index)
-							}
-						})
-					}),
-					typeC.map(async (item, index) => {
-						await db.prescription.update({
-							where: { id: item.id },
-							data: {
-								queue_random: String(new Date().getTime() + index)
-							}
-						})
-					})
-				])
-			}
-
-			const response = {
-				data: { typeA, typeC } ,
-				message: 'Auto queue has been updated successfully',
-			}
-
-
-			res.locals.data = response;
-			// call base class method
-			super.send(res);
-		} catch (err) {
-			next(err);
 		}
+
+		const response = {
+			data: { typeAB, typeCD },
+			message: 'Auto queue has been updated successfully',
+		}
+
+
+		res.locals.data = response;
+		// call base class method
+		super.send(res);
+	} catch (err) {
+		next(err);
 	}
+}
 
 	/**
  *
@@ -873,6 +881,181 @@ export default class UdhAutoloadController extends BaseController {
 		}
 	}
 
+	/**
+	 *
+	 * @param req
+	 * @param res
+	 * @param nextprisma
+	 */
+	public async getCabinet(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			
+			// console.log('ok',req.params.id)
+			const data: any = [];
+			const cabinet = await db.prescription.findFirst({
+			where: {
+				id: req.params.id,
+			},
+			select: {
+				arranged: {
+				select: {
+					id: true,
+					medicine_name: true,
+					medicineCode: true,
+					medicine_amount: true,
+					medicine: {
+					select: {
+						medicineCode: true,
+						name: true,
+						medicineName_en: true,
+						cabinet: {
+						where: { storage_station: req.params.station },
+						select: {
+							mqtt_topic: true,
+							storage_position: true,
+							cabinet: true,
+							plcId: true,
+						},
+						},
+					},
+					},
+				},
+				},
+			},
+
+			});
+			if (!cabinet) {
+				throw new ApiError('No prescription found in the system', StatusCodes.BAD_REQUEST);
+			}
+
+			cabinet?.arranged.map(async (obj) => {
+
+
+			obj.medicine?.cabinet.map(async (cabinets) => {
+				if (cabinets.cabinet === 'HYB') {
+				if (cabinets.plcId) {
+					data.push({ type: 'HYB', ip: cabinets.plcId, id: obj.id, status: 1, count: obj.medicine_amount });
+				}
+				} else if (cabinets.cabinet === 'COOL') {
+				const topicRegex = /^UDH\/E\/E(\d)\/(\d)\.(\d)$/;
+				const match = cabinets.mqtt_topic?.match(topicRegex);
+
+				if (match) {
+					const x = Number.parseInt(match[1] || '', 10);
+					const y = Number.parseInt(match[2] || '', 10);
+					const z = Number.parseInt(match[3] || '', 10);
+
+					let slave: number;
+					if (x === 3) {
+					if (z >= 1 && z <= 4) {
+						slave = (y - 1) * 4 + z;
+					} else if (z >= 5 && z <= 8) {
+						slave = 16 + (y - 1) * 4 + z;
+					} else if (z >= 9 && z <= 12) {
+						slave = 32 + (y - 1) * 4 + z;
+					}
+					} else if (x === 4) {
+					if (z >= 1 && z <= 4) {
+						slave = 60 + (y - 1) * 4 + z;
+					} else if (z >= 5 && z <= 8) {
+						slave = 76 + (y - 1) * 4 + z;
+					} else if (z >= 9 && z <= 12) {
+						slave = 92 + (y - 1) * 4 + z;
+					}
+					}
+
+					if (slave !== undefined) {
+					const medicineName = obj.medicine_name
+						? obj.medicine_name.length > 20
+						? `${obj.medicine_name.slice(0, 20)}...`
+						: obj.medicine_name
+						: '';
+					publishMessage(`${cabinets.mqtt_topic}`, JSON.stringify({
+						mac: cabinets.plcId,
+						slave: slave.toString(),
+						data: `${obj.medicine_amount}${','}${medicineName}`,
+					}));
+					} else {
+					console.error('Invalid value of x in topic:', cabinets.mqtt_topic);
+					}
+				}
+				} else if (cabinets.cabinet === 'HAD') {
+				const topicRegex = /^UDH\/E\/E(\d)\/(\d)\.(\d)$/;
+				const match = cabinets.mqtt_topic?.match(topicRegex);
+				if (match) {
+					const x = Number.parseInt(match[1] || '', 10);
+					const y = Number.parseInt(match[2] || '', 10);
+					const z = Number.parseInt(match[3] || '', 10);
+
+					let slave: number;
+					if (x === 5) {
+					slave = (y - 1) * 3 + z;
+					} else if (x === 6) {
+					slave = 27 + (y - 1) * 3 + z;
+					} else if (x === 7) {
+					slave = 54 + (y - 1) * 3 + z;
+					} else if (x === 8) {
+					slave = 81 + (y - 1) * 3 + z;
+					}
+
+					if (slave !== undefined) {
+					const medicineName = obj.medicine_name
+						? obj.medicine_name.length > 20
+						? `${obj.medicine_name.slice(0, 20)}...`
+						: obj.medicine_name
+						: '';
+					publishMessage(`${cabinets.mqtt_topic}`, JSON.stringify({
+						mac: cabinets.plcId,
+						slave: slave.toString(),
+						data: `${obj.medicine_amount}${','}${medicineName}`,
+					}));
+					} else {
+					console.error('Invalid value of x in topic:', cabinets.mqtt_topic);
+					}
+				}
+				} else if (cabinets.cabinet === 'SMD') {
+				if (cabinets.plcId) {
+
+					// await axios.post(`http://172.16.2.254:1880/cabinet_command`,{ type: 'SMD', ip: cabinets.plcId, id: obj.id, status: 1, count: obj.medicine_amount }).then((res) => {
+					// 	// eslint-disable-next-line no-console
+					// 	console.log(res?.data);
+					//   });
+					data.push({ type: 'SMD', ip: cabinets.plcId, id: obj.id, status: 1, count: obj.medicine_amount });
+				}
+				}
+				// console.log(data)
+				});
+			});
+            // let data: [];
+			// data.map(async (item, index) => {
+			// 	// setTimeout(async () => {
+			// 	// 	await axios.post(`http://172.16.2.254:1880/cabinet_command`,item).then((res) => {
+			// 	// 		// eslint-disable-next-line no-console
+			// 	// 		console.log(res?.data);
+			// 	// 	  });
+			// 	// },10000)
+				
+			// })
+			// await axios.post(`http://172.16.2.254:1880/cabinet_command`, data).then((res) => {
+			// 	// eslint-disable-next-line no-console
+			// 	console.log(res.data);
+			//   });
+			const response = {
+				data:data
+				// message: 'Autoload has been updated successfully',
+			}
+
+			res.locals.data = response;
+			// call base class method
+			super.send(res);
+		} catch (err) {
+			next(err);
+		}
+	}
 	/**
 	 *
 	 * @param req

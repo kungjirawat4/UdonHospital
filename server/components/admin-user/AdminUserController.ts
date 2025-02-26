@@ -74,7 +74,9 @@ export default class AdminUserController extends BaseController {
 		next: NextFunction,
 	): Promise<void> {
 		try {
-			const [session, users, userError, sqlSelect, countArrang] = await Promise.all([
+			const [session, users, userError, 
+				// sqlSelect, countArrang
+			] = await Promise.all([
 				db.session.findMany({
 					select: {
 						id: true,
@@ -200,21 +202,21 @@ export default class AdminUserController extends BaseController {
 					}
 				}),
 
-				db.$queryRaw`select count(*),  error01 from arrangeds where NOT(user_id is null) and (user_arrang is null) group by error01`,
-				db.$queryRaw`select count(*) from arrangeds where NOT(user_id is null) and NOT(user_arrang is null)`
+				// db.$queryRaw`select count(*),  error01 from arrangeds where NOT(user_id is null) and (user_arrang is null) group by error01`,
+				// db.$queryRaw`select count(*) from arrangeds where NOT(user_id is null) and NOT(user_arrang is null)`
 
 
 			]);
 
 			if (!session && !users) throw new ApiError('Invalid user login', StatusCodes.BAD_REQUEST);
-			const count = sqlSelect[0].count.toString();
-			const countArr = countArrang[0].count.toString();
+			// const count = sqlSelect[0].count.toString();
+			// const countArr = countArrang[0].count.toString();
 			const response = {
 				session,
 				users,
 				userError,
-				sqlSelect: [ count, sqlSelect[1] ],
-				countArrang: countArr,
+				// sqlSelect: [ count, sqlSelect[1] ],
+				// countArrang: countArr,
 				message: 'Session has been login successfully',
 			}
 

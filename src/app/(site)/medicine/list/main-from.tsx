@@ -375,8 +375,7 @@ const MainForm = () => {
                       </span>
                       {queueItem?.lastDispense && (
                         <span className="block text-xs text-gray-700">
-                          เวลาจ่าย
-                          {' '}
+                         
                           {TimeOnlyTH1(queueItem.lastDispense)}
                         </span>
                       )}
@@ -442,8 +441,7 @@ const MainForm = () => {
                       </span>
                       {queueItem?.lastDispense && (
                         <span className="block text-xs text-gray-700">
-                          เวลาจ่าย
-                          {' '}
+                        
                           {TimeOnlyTH(queueItem.lastDispense)}
                         </span>
                       )}
@@ -508,8 +506,7 @@ const MainForm = () => {
                       </span>
                       {queueItem?.lastDispense && (
                         <span className="block text-xs text-gray-700">
-                          เวลาจ่าย
-                          {' '}
+                        
                           {TimeOnlyTH(queueItem.lastDispense)}
                         </span>
                       )}
@@ -575,8 +572,6 @@ const MainForm = () => {
                       </span>
                       {queueItem?.lastDispense && (
                         <span className="block text-xs text-gray-700">
-                          เวลาจ่าย
-                          {' '}
                           {TimeOnlyTH(queueItem.lastDispense)}
                         </span>
                       )}

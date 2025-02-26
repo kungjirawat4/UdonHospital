@@ -110,6 +110,16 @@ export const columns = ({ isPending, deleteHandler }: Column) => {
       accessorKey: 'medicinePackageSize',
       active: true,
     },
+    {
+      header: 'คงเหลือ',
+      accessorKey: 'storageMin',
+      active: true,
+    },
+    {
+      header: 'จน.สูงสุด',
+      accessorKey: 'storageMax',
+      active: true,
+    },
     // { header: 'Note', accessorKey: 'medicineNote', active: true },
     // {
     //   header: 'CreatedAt',

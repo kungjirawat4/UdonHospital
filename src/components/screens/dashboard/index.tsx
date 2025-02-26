@@ -23,6 +23,7 @@ import PrintPage from '@/components/screens/prints/dashboard';
 import Image from 'next/image';
 import WorkloadView from '../prints/workload';
 import DrugPage from './drug/page';
+import PrescriptionPage from './prescription/page';
 import { FaPrint } from 'react-icons/fa6';
 export default function HomeView() {
   const isClient = useIsClient();
@@ -665,7 +666,7 @@ export default function HomeView() {
 
         </TabsContent>
         <TabsContent value="analytics" className="space-y-4">
-
+<PrescriptionPage />
         </TabsContent>
         <TabsContent value="reports" className="space-y-4">
           <DrugPage />

@@ -102,25 +102,25 @@ export default class UdhBackupController extends BaseController {
 
             ])
 
-            await Promise.all([
-                db.arrangedBackup.deleteMany({
-                    where: {
-                        AND: [
-                            { createdAt: { gte: new Date(dayjsStartDate.format('YYYY-MM-DDTHH:mm:ss')) } },
-                            { createdAt: { lte: new Date(dayjsEndDate.format('YYYY-MM-DDTHH:mm:ss')) } },
-                        ]
-                    }
-                }),
+            // await Promise.all([
+            //     db.arrangedBackup.deleteMany({
+            //         where: {
+            //             AND: [
+            //                 { createdAt: { gte: new Date(dayjsStartDate.format('YYYY-MM-DDTHH:mm:ss')) } },
+            //                 { createdAt: { lte: new Date(dayjsEndDate.format('YYYY-MM-DDTHH:mm:ss')) } },
+            //             ]
+            //         }
+            //     }),
 
-                db.prescriptionBackup.deleteMany({
-                    where: {
-                        AND: [
-                            { createdAt: { gte: new Date(dayjsStartDate.format('YYYY-MM-DDTHH:mm:ss')) } },
-                            { createdAt: { lte: new Date(dayjsEndDate.format('YYYY-MM-DDTHH:mm:ss')) } },
-                        ]
-                    }
-                }),
-            ])
+            //     db.prescriptionBackup.deleteMany({
+            //         where: {
+            //             AND: [
+            //                 { createdAt: { gte: new Date(dayjsStartDate.format('YYYY-MM-DDTHH:mm:ss')) } },
+            //                 { createdAt: { lte: new Date(dayjsEndDate.format('YYYY-MM-DDTHH:mm:ss')) } },
+            //             ]
+            //         }
+            //     }),
+            // ])
 
             if (prescription && arranged) {
                 await Promise.all([

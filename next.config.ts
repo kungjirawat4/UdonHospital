@@ -1,35 +1,44 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+    /* config options here */
 
-  output: 'standalone',
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-//   experimental: {
-//     scrollRestoration: true, // ✅ เปิดใช้งาน Scroll Restoration
-//   },
-  reactStrictMode: false,
+    output: 'standalone',
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
+    //   experimental: {
+    //     scrollRestoration: true, // ✅ เปิดใช้งาน Scroll Restoration
+    //   },
+    reactStrictMode: false,
+    // images: {
+    //     remotePatterns: [
+    //         {
+    //             protocol: 'https',
+    //             hostname: 'ahmedibra.com'
+    //         },
+    //         {
+    //             protocol: 'https',
+    //             hostname: 'github.com'
+    //         },
+    //         {
+    //             protocol: 'https',
+    //             hostname: 'ui-avatars.com'
+    //         },
+    //         {
+    //             protocol: 'http',
+    //             hostname: 'localhost'
+    //         }
+    //     ]
+    // },
     images: {
         remotePatterns: [
             {
                 protocol: 'https',
-                hostname: 'ahmedibra.com'
+                hostname: '**',
             },
-            {
-                protocol: 'https',
-                hostname: 'github.com'
-            },
-            {
-                protocol: 'https',
-                hostname: 'ui-avatars.com'
-            },
-            {
-                protocol: 'http',
-                hostname: 'localhost'
-            }
-        ]
+            { protocol: 'http', hostname: '**' },
+        ],
     },
     // webpack: (config) => {
     //     config.output = {
@@ -38,7 +47,7 @@ const nextConfig: NextConfig = {
     //     };
     //     return config;
     //   },
-    
+
 };
 
 export default nextConfig;

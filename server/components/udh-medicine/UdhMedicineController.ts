@@ -95,6 +95,16 @@ export default class UdhMedicineController extends BaseController {
 				handler: this.getdrugId.bind(this),
 			},
 			{
+				path: '/prescription/doublecheck',
+				method: 'get',
+				handler: this.getdoublecheck.bind(this),
+			},
+			{
+				path: '/prescriptionview/doublecheck',
+				method: 'get',
+				handler: this.getdoublecheckv.bind(this),
+			},
+			{
 				path: '/product',
 				method: 'post',
 				handler: this.postProduct.bind(this),
@@ -297,10 +307,10 @@ export default class UdhMedicineController extends BaseController {
 		const dayjsStartDate = dayjsNow.startOf('day');
 		const dayjsEndDate = dayjsNow.endOf('day');
 		try {
-			// const url = 'http://172.16.2.254:8080/udh/med-hn';
-			// const details = 'http://172.16.2.254:8080/udh/med-pay';
-			const url = 'http://localhost:8000/med-hn';
-			const details = 'http://localhost:8001/med-pay';
+			const url = 'http://172.16.2.254:3000/v1/udh/med-hn';
+			const details = 'http://172.16.2.254:3000/v1/udh/med-pay';
+			// const url = 'http://localhost:8000/med-hn';
+			// const details = 'http://localhost:8001/med-pay';
 			const [response1, ress] = await Promise.all([
 				fetch(url, { cache: 'no-cache' }),
 				fetch(details, { cache: 'no-cache' }),
@@ -380,7 +390,7 @@ export default class UdhMedicineController extends BaseController {
 								// const queuetypes = ['000', '0101', '019', '031', '032', '040', '050', '054', '055', '059', '060', '070', '090', '091', '110', '124', '135'].includes(item.deptCode?.trim()) ? 'C' : Qtype;
 								const finalQueueType = ['090', '091'].includes(item.deptCode?.trim())
 									? 'D'
-									: (['000', '0101', '019', '031', '032', '040', '0411', '042', '043', '045', '046', '049', '050', '0501', '0503', '0504', '0506', '0508', '052', '053', '054', '055', '056', '057', '058', '059', '0591', '060', '061', '070', '071', '110', '124', '135'].includes(item.deptCode?.trim()) ? 'C' : Qtype);
+									: (['000', '001', '0101', '019', '031', '032', '040', '0411', '042', '043', '045', '046', '049', '050', '0501', '0503', '0504', '0506', '0508', '052', '053', '054', '055', '056', '057', '058', '059', '0591', '060', '061', '070', '071', '110', '124', '135'].includes(item.deptCode?.trim()) ? 'C' : Qtype);
 								const prescripStatus = ['A', 'B', 'C', 'D'].includes(Qtype) ? 'รอจับคู่ตะกร้า' : 'จ่ายยาสำเร็จ';
 								let firstIssTime7 = matchingDetails[0]?.firstIssTime || null;
 
@@ -392,7 +402,7 @@ export default class UdhMedicineController extends BaseController {
 								// สร้างข้อมูลใหม่
 								await db.prescription.create({
 									data: {
-										urgent:Qtype === 'B',
+										urgent: Qtype === 'B' || Qtype === 'D',
 										hnCode: item.hn[0]?.trim() || '',
 										full_name: item.fullname?.trim() || '',
 										// queue_type: Qtype,
@@ -408,6 +418,7 @@ export default class UdhMedicineController extends BaseController {
 										doctor_names: item.doctor_name?.trim() || '',
 										pay_type: item.pay_typedes?.trim() || '',
 										dept_name: item.deptDesc?.trim() || '',
+										age: item.age || '',
 										dept_code: item.deptCode?.trim() || '',
 										drug_allergy: `${item.medCode?.trim() || ''}${','}${allergy?.name || ''}${' '} ${item.alergyNote?.trim() || ''}`,
 										//  ${item.alergyNote?.trim() || ''}
@@ -2178,6 +2189,163 @@ export default class UdhMedicineController extends BaseController {
 			const response = {
 				...BasketObj,
 				message: 'Cabinets has been removed successfully',
+			}
+
+
+			res.locals.data = response;
+			// call base class method
+			super.send(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+	/**
+*
+* @param req
+* @param res
+* @param next
+*/
+	public async getdoublecheck(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const { searchParams } = new URL(req.url);
+			const q = searchParams.get('q'); // ค่าค้นหา
+			const todayStart = startOfDay(new Date());
+			const todayEnd = endOfDay(new Date());
+
+			// ตรวจสอบค่าของ q และใช้เงื่อนไขที่เหมาะสม
+			const query = {
+				id: q && q.trim() !== '' ? { contains: q, mode: QueryMode.insensitive } : {}, // ใช้ q หรือไม่ใช้
+				createdAt: {
+					gte: todayStart,
+					lte: todayEnd,
+				},
+				prescrip_status: {
+					in: ['กำลังจัดยา', 'กำลังตรวจสอบ', 'รอเรียกคิว', 'กำลังจ่ายยา', 'พักตะกร้า', 'จ่ายยาสำเร็จ', 'ยกเลิก'], // กรองสถานะ
+				},
+			};
+
+			// ตรวจสอบ page และ limit
+			const page = Math.max(1, Number.parseInt(searchParams.get('page') as string, 10) || 1);
+			const pageSize = Math.max(1, Number.parseInt(searchParams.get('limit') as string, 10) || 50);
+			const skip = (page - 1) * pageSize;
+
+			// ดึงข้อมูลจากฐานข้อมูล
+			const [result, total] = await Promise.all([
+				db.prescription.findMany({
+					where: query,
+					include: {
+						autoload: true,
+						basket: true,
+						arranged: {
+							include: {
+								medicine: {
+									include: {
+										cabinet: true,
+									},
+								},
+							},
+						},
+					},
+					skip,
+					take: pageSize,
+					orderBy: { createdAt: 'desc' },
+				}),
+				db.prescription.count({ where: query }),
+			]);
+
+			if (total === 0) {
+				throw new Error("No prescriptions found with the given criteria");
+			}
+
+			const pages = Math.max(1, Math.ceil(total / pageSize));
+
+			const response = {
+				startIndex: skip + 1,
+				endIndex: skip + result.length,
+				count: result.length,
+				page,
+				pages,
+				total,
+				data: result,
+				message: 'Basket has been created successfully',
+			};
+
+			res.locals.data = response;
+			super.send(res); // ส่งผลลัพธ์กลับ
+		} catch (err) {
+			next(err); // ส่งข้อผิดพลาดไปยัง middleware ถ้ามี
+		}
+	}
+
+	/**
+*
+* @param req
+* @param res
+* @param next
+*/
+	public async getdoublecheckv(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const { searchParams } = new URL(req.url);
+			const q = searchParams.get('q');
+			const todayStart = startOfDay(new Date());
+			const todayEnd = endOfDay(new Date());
+
+			const query = {
+				id: q ? { contains: q, mode: QueryMode.insensitive } : {},
+				createdAt: {
+					gte: todayStart, // ตั้งแต่เวลาเริ่มต้นของวัน
+					lte: todayEnd, // จนถึงเวลาสิ้นสุดของวัน
+				},
+				//  prescrip_status: 'กำลังตรวจสอบ',
+				prescrip_status: {
+					in: ['กำลังจัดยา', 'กำลังตรวจสอบ', 'รอเรียกคิว', 'กำลังจ่ายยา', 'พักตะกร้า', 'จ่ายยาสำเร็จ', 'ยกเลิก'], // กรองสถานะ 2 ค่า
+				},
+			};
+			const page = Math.max(1, Number.parseInt(searchParams.get('page') as string, 10) || 1);
+			const pageSize = Math.max(1, Number.parseInt(searchParams.get('limit') as string, 10) || 50);
+			const skip = (page - 1) * pageSize;
+
+			const [result, total] = await Promise.all([
+				db.prescription.findMany({
+					where: query,
+					include: {
+						autoload: true,
+						basket: true,
+						arranged: {
+							include: {
+								medicine: {
+									include: {
+										cabinet: true,
+									},
+								},
+							},
+						},
+					},
+					skip,
+					take: pageSize,
+					orderBy: { createdAt: 'desc' },
+				}),
+				db.prescription.count({ where: query }),
+			]);
+			const pages = Math.max(1, Math.ceil(total / pageSize));
+			// console.log(req.body);
+			const response = {
+				startIndex: skip + 1,
+				endIndex: skip + result.length,
+				count: result.length,
+				page,
+				pages,
+				total,
+				data: result,
+				message: 'Basket has been created successfully',
 			}
 
 

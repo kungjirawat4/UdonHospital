@@ -64,7 +64,7 @@ import logger from './lib/logger';
 import next from 'next';
 import { db } from './lib/prisma.db';
 import io from './socket-io';
-import { udh4 } from './udp_server';
+import udp4  from './udp_server';
 import cron from "node-cron";
 import axios from 'axios';
 
@@ -86,7 +86,7 @@ function serverError(error: NodeJS.ErrnoException): void {
 
 function serverListening(): void {
 	const addressInfo: AddressInfo = server.address() as AddressInfo;
-	udh4.bind(20000);
+	udp4.bind(20000);
 	logger.info(
 		`Listening on ${addressInfo.address}:${process.env.PORT || 8080}`,
 	);
@@ -113,6 +113,7 @@ cron.schedule("*/20 * 1-20 * * 1,2,3,4,5", async function () {    // ทุก�
 			.then(async res => {
 				if (res.status === 200) {
 					// console.log(res.data)
+					console.log('ดึงข้อมูลสำเร็จ');
 					db.$disconnect();
 				}
 			})
@@ -120,8 +121,6 @@ cron.schedule("*/20 * 1-20 * * 1,2,3,4,5", async function () {    // ทุก�
 				db.$disconnect();
 			}),
 	])
-
-	console.log('ดึงข้อมูลสำเร็จ');
 
 })
 cron.schedule("*/10 * 1-16 * * 1,2,3,4,5", async function () {    // ทุกๆ 01.00-21.00 ของวันจันทร์-ศุกร์
@@ -130,6 +129,7 @@ cron.schedule("*/10 * 1-16 * * 1,2,3,4,5", async function () {    // ทุก�
 			.then(async res => {
 				if (res.status === 200) {
 					// console.log(res.data)
+					console.log('เช็คมูลสำเร็จ');
 					db.$disconnect();
 				}
 			})
@@ -137,7 +137,7 @@ cron.schedule("*/10 * 1-16 * * 1,2,3,4,5", async function () {    // ทุก�
 				db.$disconnect();
 			}),
 	])
-	console.log('เช็คมูลสำเร็จ');
+	// console.log('เช็คมูลสำเร็จ');
 
 })
 nextApp.prepare().then(() => {

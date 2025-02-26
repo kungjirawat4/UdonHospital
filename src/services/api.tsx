@@ -24,8 +24,8 @@ export const api = async (method: Method, url: string, obj = {}) => {
 
   try {
     let response: AxiosResponse<any, any>
-    let fullUrl = `${baseUrl}/v1/${url}`
-    let getUrl = `${baseUrl}/api/${url}`
+    let fullUrl = `${baseUrl}/${url}`
+    let getUrl = `${process.env.NEXT_PUBLIC_API1_URL}/${url}`
 
     switch (method) {
       case 'GET':
