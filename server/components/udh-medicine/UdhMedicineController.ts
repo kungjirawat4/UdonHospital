@@ -2301,9 +2301,11 @@ function printTemplate(printer: any, data: PrintData) {
 	printer.println(`วันที่: ${date} ${time}`);
 
 	printer.println('');
-	printer.println(`เภสัชผู้ตรวจสอบ:....................`);
+	printer.println(`ผู้ยืนยัน:${data.userconfirms.trim()}`);
 	printer.println('');
-	printer.println(`เภสัชผู้ส่งมอบ:.....................`);
+	printer.println(`ผู้ตรวจสอบ:....................`);
+	printer.println('');
+	printer.println(`ผู้ส่งมอบ:.....................`);
 	printer.alignCenter();
 	printer.println('');
 	printer.code128(data.HN, {

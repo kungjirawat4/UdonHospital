@@ -325,6 +325,7 @@ export default class UdhAutoloadController extends BaseController {
 							dept_name: true,
 							drug_allergy: true,
 							pay_type: true,
+							userconfirm:true,
 							arranged: {
 								include: {
 									medicine: true,
@@ -361,6 +362,7 @@ export default class UdhAutoloadController extends BaseController {
 							dept: `${printData?.dept_name || ''}`,
 							allergy: `${printData?.drug_allergy || ''}`,
 							type_q: `${printData?.queue_type || ''}`,
+							userconfirms:`${printData?.userconfirm || ''}`,
 							item: printData?.arranged.map(arrange => ({
 								name: arrange?.medicine_name,
 								quantity: arrange?.medicine_amount,

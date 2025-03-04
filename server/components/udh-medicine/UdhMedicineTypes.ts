@@ -19,5 +19,6 @@ export type PrintData = {
     age: string;
     allergy: string;
     type_q: string;
+    userconfirms:string;
     item: Item[];
 };

@@ -363,6 +363,7 @@ model Prescription {
   lastDispense     DateTime? //เวลาจ่ายเสร็จ
   lastDiff         Int?       @default(0) @db.SmallInt ///เวลาได้รับยา
   userconfirm       String? ///คนคอนเฟิมยา
+  confirmTime     DateTime? //เวลาตรวจเสร็จ
   dateQueue        DateTime   @default(now()) @db.Date
   createdAt        DateTime   @default(now())
   updatedAt        DateTime?  @updatedAt
