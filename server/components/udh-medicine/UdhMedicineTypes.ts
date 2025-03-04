@@ -16,6 +16,7 @@ export type PrintData = {
     pay: string;
     lap: string;
     dept: string;
+    age: string;
     allergy: string;
     type_q: string;
     item: Item[];

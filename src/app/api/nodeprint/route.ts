@@ -23,6 +23,7 @@ type PrintData = {
   lap: string;
   dept: string;
   allergy: string;
+  age:string;
   type_q: string;
   item: Item[];
 };
@@ -128,6 +129,7 @@ function printTemplate(printer: any, data: PrintData) {
 
   printer.alignLeft();
   printer.println('');
+  printer.println(`อายุ:${data.age || ''}`);
   printer.println(`ห้องตรวจ:${data.dept || ''}`);
   printer.println(`ประวัติการแพ้ยา:${data.allergy || ''}`);
   printer.println(`ชื่อแพทย์/ผู้สั่งจ่าย:${data.doctor.trim()}`);

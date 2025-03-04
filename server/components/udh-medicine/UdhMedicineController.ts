@@ -95,16 +95,6 @@ export default class UdhMedicineController extends BaseController {
 				handler: this.getdrugId.bind(this),
 			},
 			{
-				path: '/prescription/doublecheck',
-				method: 'get',
-				handler: this.getdoublecheck.bind(this),
-			},
-			{
-				path: '/prescriptionview/doublecheck',
-				method: 'get',
-				handler: this.getdoublecheckv.bind(this),
-			},
-			{
 				path: '/product',
 				method: 'post',
 				handler: this.postProduct.bind(this),
@@ -424,6 +414,7 @@ export default class UdhMedicineController extends BaseController {
 										//  ${item.alergyNote?.trim() || ''}
 										// firstIssTime: matchingDetails.map((detail: any) => detail?.firstIssTime[0]?.trim()).join(', ') || '',
 										firstIssTime: firstIssTime7 || null,
+										userconfirm:matchingDetails[0]?.userConfirm,
 										arranged: {
 											create: await Promise.all(matchingDetails.map(async (detail: any, index: number) => {
 												const medicine = await db.medicine.findUnique({
@@ -2199,163 +2190,6 @@ export default class UdhMedicineController extends BaseController {
 			next(err);
 		}
 	}
-	/**
-*
-* @param req
-* @param res
-* @param next
-*/
-	public async getdoublecheck(
-		req: Request,
-		res: Response,
-		next: NextFunction,
-	): Promise<void> {
-		try {
-			const { searchParams } = new URL(req.url);
-			const q = searchParams.get('q'); // ค่าค้นหา
-			const todayStart = startOfDay(new Date());
-			const todayEnd = endOfDay(new Date());
-
-			// ตรวจสอบค่าของ q และใช้เงื่อนไขที่เหมาะสม
-			const query = {
-				id: q && q.trim() !== '' ? { contains: q, mode: QueryMode.insensitive } : {}, // ใช้ q หรือไม่ใช้
-				createdAt: {
-					gte: todayStart,
-					lte: todayEnd,
-				},
-				prescrip_status: {
-					in: ['กำลังจัดยา', 'กำลังตรวจสอบ', 'รอเรียกคิว', 'กำลังจ่ายยา', 'พักตะกร้า', 'จ่ายยาสำเร็จ', 'ยกเลิก'], // กรองสถานะ
-				},
-			};
-
-			// ตรวจสอบ page และ limit
-			const page = Math.max(1, Number.parseInt(searchParams.get('page') as string, 10) || 1);
-			const pageSize = Math.max(1, Number.parseInt(searchParams.get('limit') as string, 10) || 50);
-			const skip = (page - 1) * pageSize;
-
-			// ดึงข้อมูลจากฐานข้อมูล
-			const [result, total] = await Promise.all([
-				db.prescription.findMany({
-					where: query,
-					include: {
-						autoload: true,
-						basket: true,
-						arranged: {
-							include: {
-								medicine: {
-									include: {
-										cabinet: true,
-									},
-								},
-							},
-						},
-					},
-					skip,
-					take: pageSize,
-					orderBy: { createdAt: 'desc' },
-				}),
-				db.prescription.count({ where: query }),
-			]);
-
-			if (total === 0) {
-				throw new Error("No prescriptions found with the given criteria");
-			}
-
-			const pages = Math.max(1, Math.ceil(total / pageSize));
-
-			const response = {
-				startIndex: skip + 1,
-				endIndex: skip + result.length,
-				count: result.length,
-				page,
-				pages,
-				total,
-				data: result,
-				message: 'Basket has been created successfully',
-			};
-
-			res.locals.data = response;
-			super.send(res); // ส่งผลลัพธ์กลับ
-		} catch (err) {
-			next(err); // ส่งข้อผิดพลาดไปยัง middleware ถ้ามี
-		}
-	}
-
-	/**
-*
-* @param req
-* @param res
-* @param next
-*/
-	public async getdoublecheckv(
-		req: Request,
-		res: Response,
-		next: NextFunction,
-	): Promise<void> {
-		try {
-			const { searchParams } = new URL(req.url);
-			const q = searchParams.get('q');
-			const todayStart = startOfDay(new Date());
-			const todayEnd = endOfDay(new Date());
-
-			const query = {
-				id: q ? { contains: q, mode: QueryMode.insensitive } : {},
-				createdAt: {
-					gte: todayStart, // ตั้งแต่เวลาเริ่มต้นของวัน
-					lte: todayEnd, // จนถึงเวลาสิ้นสุดของวัน
-				},
-				//  prescrip_status: 'กำลังตรวจสอบ',
-				prescrip_status: {
-					in: ['กำลังจัดยา', 'กำลังตรวจสอบ', 'รอเรียกคิว', 'กำลังจ่ายยา', 'พักตะกร้า', 'จ่ายยาสำเร็จ', 'ยกเลิก'], // กรองสถานะ 2 ค่า
-				},
-			};
-			const page = Math.max(1, Number.parseInt(searchParams.get('page') as string, 10) || 1);
-			const pageSize = Math.max(1, Number.parseInt(searchParams.get('limit') as string, 10) || 50);
-			const skip = (page - 1) * pageSize;
-
-			const [result, total] = await Promise.all([
-				db.prescription.findMany({
-					where: query,
-					include: {
-						autoload: true,
-						basket: true,
-						arranged: {
-							include: {
-								medicine: {
-									include: {
-										cabinet: true,
-									},
-								},
-							},
-						},
-					},
-					skip,
-					take: pageSize,
-					orderBy: { createdAt: 'desc' },
-				}),
-				db.prescription.count({ where: query }),
-			]);
-			const pages = Math.max(1, Math.ceil(total / pageSize));
-			// console.log(req.body);
-			const response = {
-				startIndex: skip + 1,
-				endIndex: skip + result.length,
-				count: result.length,
-				page,
-				pages,
-				total,
-				data: result,
-				message: 'Basket has been created successfully',
-			}
-
-
-			res.locals.data = response;
-			// call base class method
-			super.send(res);
-		} catch (err) {
-			next(err);
-		}
-	}
 }
 
 ///print
@@ -2459,6 +2293,7 @@ function printTemplate(printer: any, data: PrintData) {
 
 	printer.alignLeft();
 	printer.println('');
+	printer.println(`อายุ:${data.age || ''}`);
 	printer.println(`ห้องตรวจ:${data.dept || ''}`);
 	printer.println(`ประวัติการแพ้ยา:${data.allergy || ''}`);
 	printer.println(`ชื่อแพทย์/ผู้สั่งจ่าย:${data.doctor.trim()}`);

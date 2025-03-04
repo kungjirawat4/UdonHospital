@@ -486,7 +486,7 @@ const initSocketSingleton = () => {
     })
 
     io.on('connection', async (socket: Socket) => {
-      cron.schedule("* * * * * 1,2,3,4,5", async function () {
+      cron.schedule("* * * * * 1,2,3,4,5,6", async function () {
         await Promise.all([
           socket.emit('todate', toDay), // ส่งวันที่ไปยัง client
           await axios.get(`${NEXT_PUBLIC_API_URL}/udh/med-queue`)  // เรียกคิวแสดงแสดงทุกๆ 1 วินาที
@@ -515,7 +515,7 @@ const initSocketSingleton = () => {
         ])
       })
 
-      cron.schedule("*/3 * 1-21 * * 1,2,3,4,5", async function () { // ทุกๆ 3 วินาที ตั้งแต่ชั่วโมงที่ 1-21 ในวันจันทร์-วันศุกร์
+      cron.schedule("*/3 * 1-21 * * 1,2,3,4,5,6", async function () { // ทุกๆ 3 วินาที ตั้งแต่ชั่วโมงที่ 1-21 ในวันจันทร์-วันศุกร์
         await Promise.all([
           await axios.get(`${NEXT_PUBLIC_API_URL}/udh/quemed-info`) // ดึงข้อมูลคิวโรงพยาบาล
             .then(async res => {
@@ -552,7 +552,7 @@ const initSocketSingleton = () => {
 
       cron.schedule("0 * 1-21 * * 1,2,3,4,5", async function () {   // ทุกๆ วินาที ที่ 0 ตั้งแต่ชั่วโมงที่ 1-21 ในวันจันทร์-วันศุกร์
         await Promise.all([
-          await axios.get(`${NEXT_PUBLIC_API_URL}/autoload/prescription`)  // จัดคิวตามสัดส่วนชั้น2และ3 
+          await axios.get(`${NEXT_PUBLIC_API_URL}/autoload/randomprescription`)  // จัดคิวตามสัดส่วนชั้น2และ3 
             .then(res => {
               db.$disconnect();
             })

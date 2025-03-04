@@ -24,8 +24,21 @@ export const api = async (method: Method, url: string, obj = {}) => {
 
   try {
     let response: AxiosResponse<any, any>
-    let fullUrl = `${baseUrl}/${url}`
-    let getUrl = `${process.env.NEXT_PUBLIC_API1_URL}/${url}`
+    // // let fullUrl = `${baseUrl}/${url}`
+    // // let getUrl = `${process.env.NEXT_PUBLIC_API1_URL}/${url}`
+    //   let fullUrl = `${baseUrl}/v1/${url}`
+    // let getUrl = `${baseUrl}/api/${url}`
+    let fullUrl: string;
+let getUrl: string;
+
+if (process.env.NODE_ENV === 'production') {
+  fullUrl = `${baseUrl}/${url}`;
+  getUrl = `${process.env.NEXT_PUBLIC_API1_URL}/${url}`;
+} else {
+  fullUrl = `${baseUrl}/v1/${url}`;
+  getUrl = `${baseUrl}/api/${url}`;
+}
+
 
     switch (method) {
       case 'GET':

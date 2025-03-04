@@ -120,10 +120,10 @@ const Page = () => {
 
       {postApi?.isSuccess && (
         <div className='text-green-500 text-center mt-5'>
-          
+
           <Link href={postApi?.data?.confirm}>กรุณาตรวจสอบอีเมล์ของคุณเพื่อยืนยันบัญชีของคุณ!</Link>
         </div>
-       
+
       )}
     </FormContainer>
   )
