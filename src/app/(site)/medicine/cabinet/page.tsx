@@ -28,6 +28,8 @@ import { columns } from './columns';
 import { location_options, station_options } from './filters';
 import ApiCall from '@/services/api';
 import Skeleton  from '@/components/skeleton';
+import useAuthorization from '@/hooks/useAuthorization';
+import { useRouter } from 'next/navigation';
 const FormSchema = z.object({
   cabinet: z.string().refine(value => value !== '', {
     message: 'Cabinet is required',
@@ -95,6 +97,13 @@ const Page = () => {
     method: 'DELETE',
     url: `medicine/cabinet`,
   })?.delete;
+  const path = useAuthorization()
+  const router = useRouter()
+  useEffect(() => {
+    if (path) {
+      router.push(path)
+    }
+  }, [path, router])
 
   const hospital = 'UDH';
 

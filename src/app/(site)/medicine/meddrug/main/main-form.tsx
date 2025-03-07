@@ -17,7 +17,7 @@ import FormViews from '@/components/data-tables/FormViews';
 import Skeleton from '@/components/skeleton'
 import { Form } from '@/components/ui/form';
 import { delivery, queuetype, status } from '@/constants/drug';
-import udhmedApi from '@/hooks/udhApi';
+import udhmedApi from '@/services/apidrug';
 import useToasts from '@/hooks/use-toasts';
 // import useApi from '@/hooks/useApi';
 import ApiCall from '@/services/api';
@@ -100,7 +100,14 @@ const MainForm = () => {
       medicinePrice: 0,
     },
   });
-
+// useEffect(() => {
+//     fetch(`http://172.16.2.254:8080/udh/drug-info`)
+//       .then(res => res.json())
+//       .then((data) => {
+//         setgetUdhmedApi(data);
+//         console.log('sd', data);
+//       });
+//   },[]);
   useEffect(() => {
     if (postApi?.isSuccess || updateApi?.isSuccess || deleteApi?.isSuccess) {
       getUdhmedApi?.refetch();
@@ -253,7 +260,6 @@ const MainForm = () => {
 
   const cols = columns;
 
-  console.log(getUdhmedApi?.data);
 
   return (
     <>
@@ -276,7 +282,7 @@ const MainForm = () => {
         <Skeleton />
       ) : getUdhmedApi?.isError ? (
         // <Message value={getApi?.error} />
-        toastError(getUdhmedApi?.error.message)
+        toastError(getUdhmedApi?.error)
       ) : (
         // <div className="flex-1 space-y-4 p-4 pt-">
         <DataTable

@@ -25,6 +25,8 @@ import useDataStore from '@/zustand';
 import { columns } from './columns';
 // import { columnsTH } from './columnsTH';
 import { delivery_options, status_options, type_options } from './filters';
+import useAuthorization from '@/hooks/useAuthorization';
+import { useRouter } from 'next/navigation';
 
 const FormSchema = z.object({
   hnCode: z
@@ -72,11 +74,6 @@ const MainForm = () => {
     method: 'GET',
     url: `medicine/prescriptionview/screening?page=${page}&q=${q}`,
   })?.get;
-  // const getmedudhApi = useApi({
-  //   key: ['udh-med'],
-  //   method: 'GET',
-  //   url: `medicine/udh-med`,
-  // })?.get;
 
   const postApi = ApiCall({
     key: ['prescription'],
@@ -95,6 +92,13 @@ const MainForm = () => {
     method: 'DELETE',
     url: `medicine/prescription`,
   })?.delete;
+  const path = useAuthorization()
+  const router = useRouter()
+  useEffect(() => {
+    if (path) {
+      router.push(path)
+    }
+  }, [path, router])
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -113,26 +117,6 @@ const MainForm = () => {
     },
   });
 
-  // useEffect(() => {
-  //   if (postApi?.isSuccess || updateApi?.isSuccess || deleteApi?.isSuccess) {
-  //     getApi?.refetch();
-  //     getApiv?.refetch();
-  //     // getmedudhApi?.refetch();
-  //     setDialogOpen(false);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [postApi?.isSuccess, updateApi?.isSuccess, deleteApi?.isSuccess]);
-
-  // useEffect(() => {
-  //   getApi?.refetch();
-  //   getApiv?.refetch();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [page]);
-  // useEffect(() => {
-  //   getApi?.refetch()
-  //   getApiv?.refetch();
-  //   // eslint-disable-next-line
-  // }, [limit])
   useEffect(() => {
     getApi?.refetch();
     getApiv?.refetch();
@@ -150,21 +134,6 @@ const MainForm = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q]);
-  // let interval: any;
-  // useEffect(() => {
-  //   // Implementing the setInterval method
-  //   const allowedIp = '172.16.2.254';
-  //   const currentIp = window.location.hostname;
-  //   // console.log(currentIp);
-  //   if (currentIp === allowedIp) {
-  //     // eslint-disable-next-line react-hooks/exhaustive-deps
-  //     interval = setInterval(() => {
-  //       getmedudhApi?.refetch();
-  //     }, 30000);
-  //   }
-  //   // Clearing the interval
-  //   return () => clearInterval(interval);
-  // }, [getmedudhApi]);
 
   const check = getApiv?.data;
   const dataArray = Array.isArray(check?.data) ? check.data : [];

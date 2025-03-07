@@ -53,7 +53,7 @@ export default function Page() {
   const postApi = ApiCall({
     key: ['roles'],
     method: 'POST',
-    url: `roles`,
+    url: `users/roles`,
   })?.post
 
   const updateApi = ApiCall({
@@ -65,7 +65,7 @@ export default function Page() {
   const deleteApi = ApiCall({
     key: ['roles'],
     method: 'DELETE',
-    url: `roles`,
+    url: `users/roles`,
   })?.delete
 
   const getClientPermissionsApi = ApiCall({
@@ -223,6 +223,7 @@ export default function Page() {
     defaultValues: {
       name: '',
       description: '',
+      // type:'',
       permissions: [],
       clientPermissions: [],
     },
@@ -237,8 +238,9 @@ export default function Page() {
   ) => {
     setId(item.id!)
     setEdit(true)
-
+// console.log(item.type);
     form.setValue('name', item?.name)
+    // form.setValue('type', item?.type)
     form.setValue('description', item?.description || '')
 
     form.setValue(
@@ -283,9 +285,16 @@ export default function Page() {
         form={form}
         name='name'
         label='ชื่อ-บทบาท'
-        placeholder='ชืื่อบทบาท'
+        placeholder='ชื่อบทบาท'
         type='text'
       />
+        {/* <CustomFormField
+        form={form}
+        name='type'
+        label='ประเภทบทบาท'
+        placeholder='ประเภทบทบาท'
+        type='text'
+      /> */}
       <CustomFormField
         form={form}
         label='Permission'

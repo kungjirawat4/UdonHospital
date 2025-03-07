@@ -50,7 +50,7 @@ export default function Page() {
   const postApi = ApiCall({
     key: ['users'],
     method: 'POST',
-    url: `users`,
+    url: `users/user`,
   })?.post
 
   const updateApi = ApiCall({
@@ -62,7 +62,7 @@ export default function Page() {
   const deleteApi = ApiCall({
     key: ['users'],
     method: 'DELETE',
-    url: `users`,
+    url: `users/user`,
   })?.delete
 
   useEffect(() => {

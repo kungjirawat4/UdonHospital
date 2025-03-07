@@ -19,6 +19,8 @@ import useToasts from '@/hooks/use-toasts';
 import useDataStore from '@/zustand';
 import ApiCall from '@/services/api';
 import Skeleton from '@/components/skeleton';
+import useAuthorization from '@/hooks/useAuthorization';
+import { useRouter } from 'next/navigation';
 
 const FormSchema = z.object({
   medicineId: z.string().refine(value => value !== '', {
@@ -65,6 +67,13 @@ const ProdeuctPage = () => {
     method: 'GET',
     url: `medicine/drug/${idMed}`,
   })?.get;
+  const path = useAuthorization()
+  const router = useRouter()
+  useEffect(() => {
+    if (path) {
+      router.push(path)
+    }
+  }, [path, router])
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),

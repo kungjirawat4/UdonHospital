@@ -131,7 +131,7 @@ export const GET = async (req: NextRequest) => {
     // });
 
     const page = Math.max(1, Number.parseInt(searchParams.get('page') as string, 10) || 1);
-    const pageSize = Math.max(1, Number.parseInt(searchParams.get('limit') as string, 10) || 50);
+    const pageSize = Math.max(1, Number.parseInt(searchParams.get('limit') as string, 10) || 3000);
     const skip = (page - 1) * pageSize;
 
     const [result, total] = await Promise.all([

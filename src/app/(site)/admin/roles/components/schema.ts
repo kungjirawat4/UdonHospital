@@ -4,6 +4,9 @@ export const FormSchema = z.object({
   name: z.string().refine((value) => value !== '', {
     message: 'Name is required',
   }),
+  type: z.string().refine((value) => value !== '', {
+    message: 'type is required',
+  }),
   description: z.string().optional(),
   permissions: z
     .array(z.string())

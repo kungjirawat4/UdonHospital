@@ -24,6 +24,8 @@ import Skeleton from '@/components/skeleton'
 import { columns } from './columns';
 // import { Button } from '@/components/ui/button';
 import ApiCall from '@/services/api';
+import { useRouter } from 'next/navigation';
+import useAuthorization from '@/hooks/useAuthorization';
 // import { columnsTH } from './columnsTH';
 
 const FormSchema = z.object({
@@ -90,6 +92,14 @@ const MainForm = () => {
     method: 'DELETE',
     url: `medicine/prescription`,
   })?.delete;
+  const path = useAuthorization()
+  const router = useRouter()
+  useEffect(() => {
+    if (path) {
+      router.push(path)
+    }
+  }, [path, router])
+
   // console.log(getApi?.data)
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),

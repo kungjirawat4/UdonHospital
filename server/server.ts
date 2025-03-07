@@ -92,54 +92,54 @@ function serverListening(): void {
 	);
 }
 
-cron.schedule("* 59 20 * * 5", async function () {    // ทุกๆ 21.00 ของวันศุกร์
-	await Promise.all([
-		await axios.get(`${NEXT_PUBLIC_API_URL}/database/daily`) // ทำการสำรองข้อมูล
-			.then(async res => {
-				if (res.status === 200) {
-					db.$disconnect();
-				}
-			})
-			.catch(error => {
-				db.$disconnect();
-			}),
-	])
+// cron.schedule("* 59 20 * * 5", async function () {    // ทุกๆ 21.00 ของวันศุกร์
+// 	await Promise.all([
+// 		await axios.get(`${NEXT_PUBLIC_API_URL}/database/daily`) // ทำการสำรองข้อมูล
+// 			.then(async res => {
+// 				if (res.status === 200) {
+// 					db.$disconnect();
+// 				}
+// 			})
+// 			.catch(error => {
+// 				db.$disconnect();
+// 			}),
+// 	])
 
-})
+// })
 
-cron.schedule("*/20 * 1-20 * * 1,2,3,4,5", async function () {    // ทุกๆ 01.00-21.00 ของวันจันทร์-ศุกร์
-	await Promise.all([
-		await axios.get(`${NEXT_PUBLIC_API_URL}/medicine/udh-med`) // ทำการดึงข้อมูลของโรงพยาบาล
-			.then(async res => {
-				if (res.status === 200) {
-					// console.log(res.data)
-					console.log('ดึงข้อมูลสำเร็จ');
-					db.$disconnect();
-				}
-			})
-			.catch(error => {
-				db.$disconnect();
-			}),
-	])
+// cron.schedule("*/20 * 1-20 * * 1,2,3,4,5", async function () {    // ทุกๆ 01.00-21.00 ของวันจันทร์-ศุกร์
+// 	await Promise.all([
+// 		await axios.get(`${NEXT_PUBLIC_API_URL}/medicine/udh-med`) // ทำการดึงข้อมูลของโรงพยาบาล
+// 			.then(async res => {
+// 				if (res.status === 200) {
+// 					// console.log(res.data)
+// 					console.log('ดึงข้อมูลสำเร็จ');
+// 					db.$disconnect();
+// 				}
+// 			})
+// 			.catch(error => {
+// 				db.$disconnect();
+// 			}),
+// 	])
 
-})
-cron.schedule("*/10 * 1-16 * * 1,2,3,4,5", async function () {    // ทุกๆ 01.00-21.00 ของวันจันทร์-ศุกร์
-	await Promise.all([
-		await axios.get(`${NEXT_PUBLIC_API_URL}/medicine/udh-station`) // ทำการดึงข้อมูลของโรงพยาบาล
-			.then(async res => {
-				if (res.status === 200) {
-					// console.log(res.data)
-					console.log('เช็คมูลสำเร็จ');
-					db.$disconnect();
-				}
-			})
-			.catch(error => {
-				db.$disconnect();
-			}),
-	])
-	// console.log('เช็คมูลสำเร็จ');
+// })
+// cron.schedule("*/10 * 1-16 * * 1,2,3,4,5", async function () {    // ทุกๆ 01.00-21.00 ของวันจันทร์-ศุกร์
+// 	await Promise.all([
+// 		await axios.get(`${NEXT_PUBLIC_API_URL}/medicine/udh-station`) // ทำการดึงข้อมูลของโรงพยาบาล
+// 			.then(async res => {
+// 				if (res.status === 200) {
+// 					// console.log(res.data)
+// 					console.log('เช็คมูลสำเร็จ');
+// 					db.$disconnect();
+// 				}
+// 			})
+// 			.catch(error => {
+// 				db.$disconnect();
+// 			}),
+// 	])
+// 	// console.log('เช็คมูลสำเร็จ');
 
-})
+// })
 nextApp.prepare().then(() => {
 	app.init()
 		.then(() => {

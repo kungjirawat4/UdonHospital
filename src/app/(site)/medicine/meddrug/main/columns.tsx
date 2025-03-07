@@ -7,7 +7,7 @@ import { DateTimeLongEN } from '@/libs/dateTime';
 //   deleteHandler: (item: any) => void;
 // };
 
-export const columns = (p0?: unknown) => {
+export const columns = (p0: unknown) => {
   return [
     // {
     //   accessorKey: 'no',
@@ -52,12 +52,12 @@ export const columns = (p0?: unknown) => {
       active: true,
     },
     { header: 'med_class_code', accessorKey: 'med_class_code', active: true },
-    // {
-    //   header: 'created At',
-    //   accessorKey: 'createdAt',
-    //   active: true,
-    //   cell: ({ row: { original } }: any) => DateTimeLongEN(original?.createdAt),
-    // },
+    {
+      header: 'created At',
+      accessorKey: 'createdAt',
+      active: true,
+      cell: ({ row: { original } }: any) => DateTimeLongEN(original?.createdAt),
+    },
     {
       header: 'Action',
       active: true,

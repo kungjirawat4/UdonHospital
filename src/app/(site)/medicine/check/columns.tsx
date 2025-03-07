@@ -156,7 +156,14 @@ export const columns = ({ editHandler, isPending, deleteHandler }: Column) => {
       header: 'เวลาตรวจ',
       accessorKey: 'firstIssTime',
       active: true,
-      cell: ({ row: { original } }: any) => original?.firstIssTime ? TimeOnlyTH7(original?.firstIssTime) : '',
+      cell: ({ row: { original } }: any) => original?.firstIssTime ? TimeOnlyTH(original?.firstIssTime) : '',
+    },
+    {
+      // id: 'price',
+      header: 'เวลายืนยัน',
+      accessorKey: 'confirmTime',
+      active: true,
+      cell: ({ row: { original } }: any) => original?.confirmTime ? TimeOnlyTH7(original?.confirmTime) : '',
     },
     {
       // id: 'price',

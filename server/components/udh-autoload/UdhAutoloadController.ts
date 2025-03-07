@@ -449,6 +449,7 @@ export default class UdhAutoloadController extends BaseController {
 							],
 							basketId: basket?.id as string,
 							prescrip_status: 'รอจับคู่ตะกร้า',
+							
 							// AND: [
 							// 	{ createdAt: { gte: new Date(dayjsStartDate.format('YYYY-MM-DDTHH:mm:ss')) } },
 							// 	{ createdAt: { lte: new Date(dayjsEndDate.format('YYYY-MM-DDTHH:mm:ss')) } },
@@ -459,6 +460,7 @@ export default class UdhAutoloadController extends BaseController {
 						orderBy: [{ createdAt: 'asc' }],
 					});
 					console.log(basket);
+					console.log(basket.id);
 					console.log(prescriptionObj);
 					if (basket && prescriptionObj) {
 						if (ipaddress === '101') { // ช่องตะกร้าเข้า 1

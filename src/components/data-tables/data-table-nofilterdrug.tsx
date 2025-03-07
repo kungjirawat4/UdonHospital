@@ -293,7 +293,7 @@ export function DataTable<TData, TValue>({
       setPage(1);
     }
   }, [limit, data, setPage]);
-
+console.log(data);
   const table = useReactTable({
     // data: data?.data,
     data: Array.isArray(data?.data) ? data.data : [],

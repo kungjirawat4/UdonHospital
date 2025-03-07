@@ -26,10 +26,10 @@ export const menuConfigs = {
       title: 'ใบเช็คข้อมูล',
       href: '/medicine/list',
     },
-    {
-      title: 'พักตะกร้า',
-      href: '',
-    },
+    // {
+    //   title: 'พักตะกร้า',
+    //   href: '',
+    // },
     // {
     //   title: 'Figma',
     //   href: '/docs/figma',

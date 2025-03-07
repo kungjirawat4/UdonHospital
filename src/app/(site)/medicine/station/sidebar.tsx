@@ -30,6 +30,8 @@ import ApiCall from '@/services/api';
 // import { useToast } from '@/components/ui/use-toast'
 // import { ToastAction } from '@/components/ui/toast'
 // import { Button } from '@/components/ui/button';
+// import useAuthorization from '@/hooks/useAuthorization';
+// import { useRouter } from 'next/navigation';
 const Sidebar = () => {
   const [patient, setPatient] = useState<any[]>([]);
   const [selectedQueueType, setSelectedQueueType] = useState<string>('');
@@ -56,6 +58,13 @@ const Sidebar = () => {
     method: 'PUT',
     url: `medicine/prescription/arranged`,
   })?.put;
+  // const path = useAuthorization()
+  // const router = useRouter()
+  // useEffect(() => {
+  //   if (path) {
+  //     router.push(path)
+  //   }
+  // }, [path, router])
 
   useEffect(() => {
     if (selectedQueueType) {

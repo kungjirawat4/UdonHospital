@@ -27,6 +27,8 @@ import { columns } from './columns';
 import { basket_color, basket_floor } from './filters';
 import ApiCall from '@/services/api';
 import Skeleton  from '@/components/skeleton';
+import useAuthorization from '@/hooks/useAuthorization';
+import { useRouter } from 'next/navigation';
 
 const FormSchema = z.object({
   qrCode: z.string().refine(value => value !== '', {
@@ -86,6 +88,13 @@ const Page = () => {
     method: 'DELETE',
     url: `medicine/basket`,
   })?.delete;
+  const path = useAuthorization()
+  const router = useRouter()
+  useEffect(() => {
+    if (path) {
+      router.push(path)
+    }
+  }, [path, router])
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),

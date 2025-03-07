@@ -8,9 +8,7 @@ import 'dotenv/config';
 import { RouteDefinition } from '../../types/RouteDefinition';
 import { db } from '../../lib/prisma.db';
 import path from 'path';
-
-import sharp from 'sharp';
-import { hashedPassword } from '../../lib/helpers';
+import sharp from 'sharp';;
 
 /**
  * Status controller
@@ -50,6 +48,31 @@ export default class AdminUserController extends BaseController {
 			// 	handler: this.editClientPermissions.bind(this),
 			// },
 			{
+				path: '/roles',
+				method: 'post',
+				handler: this.postRoles.bind(this),
+			},
+			{
+				path: '/roles/:id',
+				method: 'delete',
+				handler: this.deleteRoles.bind(this),
+			},
+			{
+				path: '/user',
+				method: 'post',
+				handler: this.postUser.bind(this),
+			},
+			{
+				path: '/user/:id',
+				method: 'put',
+				handler: this.postUser.bind(this),
+			},
+			{
+				path: '/user/:id',
+				method: 'delete',
+				handler: this.deleteUser.bind(this),
+			},
+			{
 				path: '/error',
 				method: 'get',
 				handler: this.getError.bind(this),
@@ -74,7 +97,7 @@ export default class AdminUserController extends BaseController {
 		next: NextFunction,
 	): Promise<void> {
 		try {
-			const [session, users, userError, 
+			const [session, users, userError,
 				// sqlSelect, countArrang
 			] = await Promise.all([
 				db.session.findMany({
@@ -398,7 +421,224 @@ export default class AdminUserController extends BaseController {
 			next(err);
 		}
 	}
+	/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
+	public async postRoles(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const {
+				name,
+				description,
+				permissions: permissionRequest,
+				clientPermissions: clientPermissionRequest,
+			} = await req.body;
 
+			let type
+			let permission = []
+			let clientPermission = []
+			if (name) type = name.toUpperCase().trim().replace(/\s+/g, '_')
+
+			if (permissionRequest) {
+				if (Array.isArray(permissionRequest)) {
+					permission = permissionRequest
+				} else {
+					permission = [permissionRequest]
+				}
+			}
+
+			if (clientPermissionRequest) {
+				if (Array.isArray(clientPermissionRequest)) {
+					clientPermission = clientPermissionRequest
+				} else {
+					clientPermission = [clientPermissionRequest]
+				}
+			}
+
+			permission = permission?.filter((per) => per)
+			clientPermission = clientPermission?.filter((client) => client)
+
+			const checkExistence =
+				name &&
+				(await db.role.findFirst({
+					where: { name: { equals: name } },
+				}))
+			if (checkExistence) throw new ApiError('Role already exist', StatusCodes.BAD_REQUEST);
+
+			const roleObj = await db.role.create({
+				data: {
+					name,
+					description,
+					type,
+					permissions: {
+						connect: permission?.map((pre) => ({ id: pre })),
+					},
+					clientPermissions: {
+						connect: clientPermission?.map((client) => ({ id: client })),
+					},
+				},
+			})
+			// console.log(req.body);
+			const response = {
+				// ...presciptionObj,
+				roleObj,
+				message: `Role has been create successfully`,
+			}
+
+
+			res.locals.data = response;
+			// call base class method
+			super.send(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+	/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
+	public async deleteRoles(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			// const { NEXT_PUBLIC_API_URL } = process.env;
+			// const values = await req.body;
+			const roleObj = await db.role.delete({
+				where: { id: req.params.id },
+			});
+			if (!roleObj) throw new ApiError('Role not found', StatusCodes.BAD_REQUEST);
+			// console.log(req.body);
+			const response = {
+				...roleObj,
+				message: 'Role has been removed successfully',
+			}
+
+
+			res.locals.data = response;
+			// call base class method
+			super.send(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+	/**
+*
+* @param req
+* @param res
+* @param next
+*/
+	public async postUser(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const { NEXT_PUBLIC_APP_URL , NEXT_PUBLIC_API_URL  } = process.env;
+			const { name, email, password, status, roleId } = await req.body;
+
+			const role =
+				roleId && (await db.role.findFirst({ where: { id: roleId } }))
+			if (!role) throw new ApiError('Role not found', StatusCodes.NOT_FOUND);
+
+			const user =
+				email &&
+				(await db.user.findFirst({
+					where: { email: email.toLowerCase() },
+				}))
+			if (user) throw new ApiError('User already exists', StatusCodes.CONFLICT);
+			const hashedPassword = await bcrypt.hash(password, 12);
+			const userObj = await db.user.create({
+				data: {
+					name,
+					qrCode: password && (`${NEXT_PUBLIC_API_URL}/auth/login?email=${email.toLowerCase()}&password=${hashedPassword}`),
+					email: email.toLowerCase(),
+					address: 'Udonthani Hospital',
+					status,
+					roleId: role.id,
+					image: `${NEXT_PUBLIC_APP_URL}/udh/avatar.png`,
+					password: hashedPassword,
+				},
+			})
+
+			userObj.password = undefined as any
+			// console.log(req.body);
+			const response = {
+				userObj,
+				message: `User has been create successfully`,
+			}
+
+
+			res.locals.data = response;
+			// call base class method
+			super.send(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+	/**
+*
+* @param req
+* @param res
+* @param next
+*/
+	public async deleteUser(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const userObj = await db.user.delete({
+				where: { id: req.params.id },
+				include: {
+					role: {
+						select: {
+							type: true,
+						},
+					},
+				},
+			});
+			// if (!userObj) return getErrorResponse('User not found', 404)
+			if (!userObj) throw new ApiError('User not found', StatusCodes.NOT_FOUND);
+			// if (userObj.role.type === 'SUPER_ADMIN')
+			// 	// return getErrorResponse('You cannot delete a super admin', 403)
+			// 	throw new ApiError('You cannot delete a super admin', StatusCodes.FORBIDDEN);
+			const userRemove = await db.user.delete({
+				where: {
+					id: userObj.id,
+				},
+			})
+
+			if (!userRemove) {
+				// return getErrorResponse('User not removed', 404)
+				throw new ApiError('User not removed', StatusCodes.NOT_FOUND);
+			}
+
+			userObj.password = undefined as any
+
+			// console.log(req.body);
+			const response = {
+				...userObj,
+				message: 'user has been removed successfully',
+			}
+
+
+			res.locals.data = response;
+			// call base class method
+			super.send(res);
+		} catch (err) {
+			next(err);
+		}
+	}
 
 	/**
 	 *

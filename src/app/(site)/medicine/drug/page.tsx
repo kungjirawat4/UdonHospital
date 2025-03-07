@@ -26,6 +26,8 @@ import useDataStore from '@/zustand';
 import Skeleton from '@/components/skeleton';
 import ApiCall from '@/services/api';
 import { columns } from './columns';
+import useAuthorization from '@/hooks/useAuthorization';
+import { useRouter } from 'next/navigation';
 // import { columnsTH } from './columnsTH';
 
 const FormSchema = z.object({
@@ -62,6 +64,14 @@ const Page = () => {
   const [image1Link, setImage1Link] = React.useState<string | null>(null);
   const [image2Link, setImage2Link] = React.useState<string | null>(null);
   const [image3Link, setImage3Link] = React.useState<string | null>(null);
+
+  const path = useAuthorization()
+  const router = useRouter()
+  useEffect(() => {
+    if (path) {
+      router.push(path)
+    }
+  }, [path, router])
 
   // const path = useAuthorization()
   // const router = useRouter()

@@ -415,6 +415,7 @@ export default class UdhMedicineController extends BaseController {
 										// firstIssTime: matchingDetails.map((detail: any) => detail?.firstIssTime[0]?.trim()).join(', ') || '',
 										firstIssTime: firstIssTime7 || null,
 										userconfirm:matchingDetails[0]?.userConfirm,
+										confirmTime:matchingDetails[0]?.lastConfirm,
 										arranged: {
 											create: await Promise.all(matchingDetails.map(async (detail: any, index: number) => {
 												const medicine = await db.medicine.findUnique({

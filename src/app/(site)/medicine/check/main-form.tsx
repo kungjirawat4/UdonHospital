@@ -28,7 +28,8 @@ import { columnsTH } from './columnsTH';
 import FormViews from './components/data-tables/FormViewsdoublec';
 import { delivery_options, status_options, type_options } from './filters';
 import Skeleton from '@/components/skeleton';
-
+import useAuthorization from '@/hooks/useAuthorization';
+import { useRouter } from 'next/navigation';
 const FormSchema = z.object({
   hnCode: z
     .string()
@@ -93,6 +94,14 @@ const MainForm = () => {
     url: `medicine/prescription`,
   })?.delete;
 
+  const path = useAuthorization()
+  const router = useRouter()
+  useEffect(() => {
+    if (path) {
+      router.push(path)
+    }
+  }, [path, router])
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -112,25 +121,13 @@ const MainForm = () => {
   });
 
   useEffect(() => {
-    if (postApi?.isSuccess || updateApi?.isSuccess || deleteApi?.isSuccess) {
-      getApi?.refetch();
-      getApiv?.refetch();
-
-      setDialogOpen(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [postApi?.isSuccess, updateApi?.isSuccess, deleteApi?.isSuccess]);
-
-  useEffect(() => {
     getApi?.refetch();
     getApiv?.refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
-  useEffect(() => {
-    getApi?.refetch()
-    getApiv?.refetch();
-    // eslint-disable-next-line
-  }, [limit])
+
+    if (postApi?.isSuccess || updateApi?.isSuccess || deleteApi?.isSuccess) {
+      setDialogOpen(false);
+    }
+  }, [postApi?.isSuccess, updateApi?.isSuccess, deleteApi?.isSuccess, page, limit]);
 
   useEffect(() => {
     if (!q) {
