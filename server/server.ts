@@ -108,7 +108,7 @@ cron.schedule("* 59 20 * * 1,2,3,4,5", async function () {    // ทุกๆ 21
 })
 cron.schedule("* 59 20 * * 6", async function () {    // ทุกๆ 21.00 ของวันเสาร์
 	await Promise.all([
-		await axios.get(`${NEXT_PUBLIC_API_URL}/database/delete`) // ทำการสำรองข้อมูล
+		await axios.get(`${NEXT_PUBLIC_API_URL}/database/delete`) // ทำการลบข้อมูล
 			.then(async res => {
 				if (res.status === 200) {
 					db.$disconnect();
