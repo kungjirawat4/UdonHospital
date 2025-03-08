@@ -11,8 +11,9 @@ import { FaEraser, FaSearch, FaTrash } from 'react-icons/fa';
 import { ReactBarcode, Renderer } from 'react-jsbarcode';
 import { toast, ToastContainer } from 'react-toastify';
 
-import useApi from '@/hooks/useApi';
+// import useApi from '@/hooks/useApi';
 import Qrcodeline from '#/public/images/qrcodeline.png';
+import ApiCall from '@/services/api';
 
 type SidebarProps = {
   setFoundPatient: (patient: any) => void;
@@ -27,19 +28,19 @@ const Sidebar: React.FC<SidebarProps> = ({ setFoundPatient }) => {
   const date = now.toLocaleDateString('th-TH');
   const time = now.toLocaleTimeString('th-TH');
 
-  const getApi = useApi({
+  const getApi = ApiCall({
     key: ['prescriptionview'],
     method: 'GET',
     url: `medicine/prescriptionview`,
   })?.get;
 
-  // useEffect(() => {
-  //   setPatient(getApi?.data?.data);
-  // }, [getApi?.data?.data]);
+  useEffect(() => {
+    setPatient(getApi?.data?.data);
+  }, [getApi?.data?.data]);
     useEffect(() => {
       const interval = setInterval(() => {
         getApi?.refetch();
-        setPatient(getApi?.data?.data);
+        // setPatient(getApi?.data?.data);
       }, 30000); // ตั้งเวลาให้เช็คทุก 10 วินาที
   
   
@@ -54,6 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setFoundPatient }) => {
 
     // console.log('searchTerm', q);
     // console.log('api', patient);
+    // console.log('api2', getApi?.data?.data);
 
     if (!q) {
       // console.log('กรุณากรอกข้อมูลในช่องค้นหา');

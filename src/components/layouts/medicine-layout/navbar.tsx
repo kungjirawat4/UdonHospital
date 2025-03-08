@@ -69,6 +69,11 @@ const LogoutModal = dynamic(() => import('./logout-modal').then(mod => mod.Logou
       image: 'http://localhost:3000/images/call_q.png',
     },
     {
+      label: 'ใบเช็คข้อมูล',
+      href: '/medicine/list',
+      image: 'http://localhost:3000/images/call_q.png',
+    },
+    {
       label: 'ออกจากระบบ',
       href: '/auth/logout',
       image: 'http://localhost:3000/images/call_q.png',

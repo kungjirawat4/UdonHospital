@@ -36,7 +36,7 @@ if (process.env.NODE_ENV === 'production') {
   getUrl = `${process.env.NEXT_PUBLIC_API1_URL}/${url}`;
 } else {
   fullUrl = `${baseUrl}/v1/${url}`;
-  getUrl = `${baseUrl}/api/${url}`;
+  getUrl = `${process.env.NEXT_PUBLIC_API1_URL}/${url}`;
 }
 
 
