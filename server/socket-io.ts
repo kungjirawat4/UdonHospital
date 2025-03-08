@@ -513,6 +513,17 @@ const initSocketSingleton = () => {
               // console.error(error)
             })
         ])
+        // await axios.get(`${NEXT_PUBLIC_API_URL}/dashboard/dashboards`) // เรียก dashboard แสดงทุกๆ 1 วินาที
+        // .then(res => {
+        //   if (res.status === 200) {
+        //     socket.emit('dashboards', res?.data); // ส่งไปยัง client
+        //   }
+        //   db.$disconnect();
+        // })
+        // .catch(error => {
+        //   db.$disconnect();
+        //   // console.error(error)
+        // })
       })
 
       cron.schedule("*/3 * 1-21 * * 1,2,3,4,5,6", async function () { // ทุกๆ 3 วินาที ตั้งแต่ชั่วโมงที่ 1-21 ในวันจันทร์-วันศุกร์

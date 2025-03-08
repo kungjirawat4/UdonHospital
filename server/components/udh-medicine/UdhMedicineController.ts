@@ -11,6 +11,7 @@ import { db, QueryMode } from '../../lib/prisma.db';
 import { Item, PrintData } from './UdhMedicineTypes';
 import { DateLongTH } from '../../lib/dateTime';
 import dayjs from 'dayjs';
+import { PrismaPromise } from '@prisma/client';
 
 /**
  * Status controller
@@ -297,10 +298,10 @@ export default class UdhMedicineController extends BaseController {
 		const dayjsStartDate = dayjsNow.startOf('day');
 		const dayjsEndDate = dayjsNow.endOf('day');
 		try {
-			const url = 'http://172.16.2.254:3000/v1/udh/med-hn';
-			const details = 'http://172.16.2.254:3000/v1/udh/med-pay';
-			// const url = 'http://localhost:8000/med-hn';
-			// const details = 'http://localhost:8001/med-pay';
+			// const url = 'http://172.16.2.254:3000/v1/udh/med-hn';
+			// const details = 'http://172.16.2.254:3000/v1/udh/med-pay';
+			const url = 'http://localhost:8000/med-hn';
+			const details = 'http://localhost:8001/med-pay';
 			const [response1, ress] = await Promise.all([
 				fetch(url, { cache: 'no-cache' }),
 				fetch(details, { cache: 'no-cache' }),
@@ -1980,42 +1981,80 @@ export default class UdhMedicineController extends BaseController {
 				where: { id: req.params.id },
 			});
 			if (!CabinetObj) throw new ApiError('medicine not found', StatusCodes.BAD_REQUEST);
-			await db.$transaction(async () => {
-				await db.cabinet.update({
-					where: { id: req.params.id },
+			// await db.$transaction(async () => {
+			// 	await db.cabinet.update({
+			// 		where: { id: req.params.id },
+			// 		data: {
+			// 			hospitalId,
+			// 			userId,
+			// 			mqtt_topic,
+			// 			cabinet,
+			// 			HouseId: house_id as string,
+			// 			cabinet_size: cabinet_size as string,
+			// 			userLevel: userLevel as string,
+			// 			storage_station,
+			// 			storage_location,
+			// 			storage_position,
+			// 			cabinet_note,
+			// 			medicineId: medicineId as string,
+			// 			plcId,
+			// 		},
+			// 	});
+
+			// 	if (medicineId) {
+			// 		// console.log('sdkfjajsdfkaljf', medicineImage1, medicineImage2, medicineImage3);
+			// 		await db.medicine.update({
+			// 			where: { id: medicineId as string },
+			// 			data: {
+			// 				storageAdd: Number(storageAdd),
+			// 				storageMin: Number(storageMin),
+			// 				storageMax: Number(storageMax),
+			// 				medicineImage1: medicineImage1 || null,
+			// 				medicineImage2: medicineImage2 || null,
+			// 				medicineImage3: medicineImage3 || null,
+			// 			},
+			// 		});
+			// 	}
+			// });
+			const transactionQueries: PrismaPromise<any>[] = [
+				db.cabinet.update({
+				  where: { id: req.params.id },
+				  data: {
+					hospitalId,
+					userId,
+					mqtt_topic,
+					cabinet,
+					HouseId: house_id as string,
+					cabinet_size: cabinet_size as string,
+					userLevel: userLevel as string,
+					storage_station,
+					storage_location,
+					storage_position,
+					cabinet_note,
+					medicineId: medicineId as string,
+					plcId,
+				  },
+				}),
+			  ];
+			  
+			  if (medicineId) {
+				transactionQueries.push(
+				  db.medicine.update({
+					where: { id: medicineId as string },
 					data: {
-						hospitalId,
-						userId,
-						mqtt_topic,
-						cabinet,
-						HouseId: house_id as string,
-						cabinet_size: cabinet_size as string,
-						userLevel: userLevel as string,
-						storage_station,
-						storage_location,
-						storage_position,
-						cabinet_note,
-						medicineId: medicineId as string,
-						plcId,
+					  storageAdd: Number(storageAdd),
+					  storageMin: Number(storageMin),
+					  storageMax: Number(storageMax),
+					  medicineImage1: medicineImage1 || null,
+					  medicineImage2: medicineImage2 || null,
+					  medicineImage3: medicineImage3 || null,
 					},
-				});
-
-				if (medicineId) {
-					// console.log('sdkfjajsdfkaljf', medicineImage1, medicineImage2, medicineImage3);
-					await db.medicine.update({
-						where: { id: medicineId as string },
-						data: {
-							storageAdd: Number(storageAdd),
-							storageMin: Number(storageMin),
-							storageMax: Number(storageMax),
-							medicineImage1: medicineImage1 || null,
-							medicineImage2: medicineImage2 || null,
-							medicineImage3: medicineImage3 || null,
-						},
-					});
-				}
-			});
-
+				  })
+				);
+			  }
+			  
+			  await db.$transaction(transactionQueries);
+			  
 			// console.log(req.body);
 			const response = {
 				...CabinetObj,

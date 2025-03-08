@@ -449,7 +449,6 @@ export default class UdhAutoloadController extends BaseController {
 							],
 							basketId: basket?.id as string,
 							prescrip_status: 'รอจับคู่ตะกร้า',
-							
 							// AND: [
 							// 	{ createdAt: { gte: new Date(dayjsStartDate.format('YYYY-MM-DDTHH:mm:ss')) } },
 							// 	{ createdAt: { lte: new Date(dayjsEndDate.format('YYYY-MM-DDTHH:mm:ss')) } },

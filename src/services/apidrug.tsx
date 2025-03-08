@@ -34,7 +34,7 @@ let getUrl: string;
 if (process.env.NODE_ENV === 'production') {
   getUrl = `${baseUrl}/${url}`;
 } else {
-  getUrl = `${'http://172.16.2.254:3000/v1'}/${url}`;
+  getUrl = `${'http://172.16.2.254:8080'}/${url}`;
 }
 
 

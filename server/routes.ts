@@ -80,6 +80,7 @@ import AdminUserController from './components/admin-user/AdminUserController';
 import UdhDashboardController from './components/udh-dashboard/UdhDashboardController';
 import UdhMedicineController from './components/udh-medicine/UdhMedicineController';
 import UdhAutoloadController from './components/udh-autoload/UdhAutoloadController';
+import UdhBackupController from './components/udh-backup/UdhBackupController';
 
 function registerControllerRoutes(routes: RouteDefinition[]): Router {
 	const controllerRouter = Router();
@@ -122,7 +123,8 @@ export function registerRoutesV1(): Router {
 			new AdminUserController(),
 			new UdhDashboardController(),
 			new UdhMedicineController(),
-			new UdhAutoloadController()
+			new UdhAutoloadController(),
+			new UdhBackupController()
 		];
 
 		// Register routes for each controller with basePath "/v1/{basePath}"

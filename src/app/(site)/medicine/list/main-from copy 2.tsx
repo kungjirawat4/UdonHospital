@@ -127,50 +127,50 @@ const MainForm = () => {
         // const normalizedCode = item.queue_code.replace(/^0+/, '').replace(/^F/, ''); // ตัด F ออกก่อนประมวลผล
         // eslint-disable-next-line eqeqeq
         if (item.medicine_service == 1) {
-          updatedB[normalizedCode] = 'มีใบแนบ';
+          updatedA[normalizedCode] = 'มีใบแนบ';
         } else if (item.prescrip_status === 'รอเรียกคิว' || item.prescrip_status === 'จ่ายยาสำเร็จ') {
           updatedB[normalizedCode] = 'จัดยาแล้ว';
         } else if (item.prescrip_status === 'รอจับคู่ตะกร้า' || item.prescrip_status === 'กำลังจัดยา') {
           updatedB[normalizedCode] = 'รอจับคู่ตะกร้า';
         } else if (item.prescrip_status === 'กำลังตรวจสอบ') {
-          updatedB[normalizedCode] = 'กำลังตรวจสอบ';
+          updatedA[normalizedCode] = 'กำลังตรวจสอบ';
         } else if (item.prescrip_status === 'กำลังจัดยา') {
-          updatedB[normalizedCode] = 'กำลังจัดยา';
+          updatedA[normalizedCode] = 'กำลังจัดยา';
         } else if (item.prescrip_status === 'ยกเลิก') {
-          updatedB[normalizedCode] = 'ยกเลิก';
+          updatedA[normalizedCode] = 'ยกเลิก';
         }
       } else if (item.queue_type === 'C') {
         const normalizedCode = item.queue_code.replace(/^0+/, ''); // ลบเลข 0 ที่อยู่หน้าสุด
         // eslint-disable-next-line eqeqeq
         if (item.medicine_service == 1) {
-          updatedC[normalizedCode] = 'มีใบแนบ';
+          updatedA[normalizedCode] = 'มีใบแนบ';
         } else if (item.prescrip_status === 'รอเรียกคิว' || item.prescrip_status === 'จ่ายยาสำเร็จ') {
           updatedC[normalizedCode] = 'จัดยาแล้ว';
         } else if (item.prescrip_status === 'รอจับคู่ตะกร้า' || item.prescrip_status === 'กำลังจัดยา') {
           updatedC[normalizedCode] = 'รอจับคู่ตะกร้า';
         } else if (item.prescrip_status === 'กำลังตรวจสอบ') {
-          updatedC[normalizedCode] = 'กำลังตรวจสอบ';
+          updatedA[normalizedCode] = 'กำลังตรวจสอบ';
         } else if (item.prescrip_status === 'กำลังจัดยา') {
-          updatedC[normalizedCode] = 'กำลังจัดยา';
+          updatedA[normalizedCode] = 'กำลังจัดยา';
         } else if (item.prescrip_status === 'ยกเลิก') {
-          updatedC[normalizedCode] = 'ยกเลิก';
+          updatedA[normalizedCode] = 'ยกเลิก';
         }
       } else if (item.queue_type === 'D') {
         // const normalizedCode = item.queue_code.replace(/^0+/, ''); // ลบเลข 0 ที่อยู่หน้าสุด
         const normalizedCode = item.queue_code.replace(/^F/, '').replace(/^0+/, ''); // ลบเลข 0 ที่อยู่หน้าสุด
         // eslint-disable-next-line eqeqeq
         if (item.medicine_service == 1) {
-          updatedD[normalizedCode] = 'มีใบแนบ';
+          updatedA[normalizedCode] = 'มีใบแนบ';
         } else if (item.prescrip_status === 'รอเรียกคิว' || item.prescrip_status === 'จ่ายยาสำเร็จ') {
           updatedD[normalizedCode] = 'จัดยาแล้ว';
         } else if (item.prescrip_status === 'รอจับคู่ตะกร้า' || item.prescrip_status === 'กำลังจัดยา') {
           updatedD[normalizedCode] = 'รอจับคู่ตะกร้า';
         } else if (item.prescrip_status === 'กำลังตรวจสอบ') {
-          updatedD[normalizedCode] = 'กำลังตรวจสอบ';
+          updatedA[normalizedCode] = 'กำลังตรวจสอบ';
         } else if (item.prescrip_status === 'กำลังจัดยา') {
-          updatedD[normalizedCode] = 'กำลังจัดยา';
+          updatedA[normalizedCode] = 'กำลังจัดยา';
         } else if (item.prescrip_status === 'ยกเลิก') {
-          updatedD[normalizedCode] = 'ยกเลิก';
+          updatedA[normalizedCode] = 'ยกเลิก';
         }
       }
     });
@@ -179,7 +179,6 @@ const MainForm = () => {
     setSelectedB(updatedB);
     setSelectedC(updatedC);
     setSelectedD(updatedD);
-
     // console.log(updatedB);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
@@ -195,38 +194,27 @@ const MainForm = () => {
       default: return 'border-gray-300';
     }
   };
-
+  
   // console.log('A', selectedA);
   // console.log('B', selectedB);
   const handleNumberClick = (num: number, side: 'A' | 'B' | 'C' | 'D') => {
     setCurrentSelectedNum(num);
     setCurrentSide(side);
     setIsModalOpen(true);
+
     const normalizedNum = num.toString().padStart(3, '0'); // แปลงเป็น 3 หลัก เช่น 005
     const queueCodeWithF = `F${normalizedNum}`; // เพิ่มตัว F ข้างหน้า เช่น F005
 
     let queueData;
 
-    if (side === 'B') {
+    if (side === 'B' || side === 'D') {
       // ถ้าเป็นฝั่ง B หรือ D ให้ลองหาทั้งแบบมี F และไม่มี F
       queueData = data?.find(
         (item: { queue_code: string; queue_type: string }) =>
           (item.queue_code === normalizedNum || item.queue_code === queueCodeWithF) &&
           item.queue_type === side
       );
-    } else if (side === 'D') {
-      queueData = data?.find(
-        (item: { queue_code: string; queue_type: string }) =>
-          (item.queue_code === normalizedNum || item.queue_code === queueCodeWithF) &&
-          item.queue_type === side
-      );
-    } else if (side === 'A') {
-      // ฝั่ง A หรือ C ให้ใช้แค่แบบไม่มี F
-      queueData = data?.find(
-        (item: { queue_code: string; queue_type: string }) =>
-          item.queue_code === normalizedNum && item.queue_type === side
-      );
-    } else if (side === 'C') {
+    } else {
       // ฝั่ง A หรือ C ให้ใช้แค่แบบไม่มี F
       queueData = data?.find(
         (item: { queue_code: string; queue_type: string }) =>
@@ -234,17 +222,14 @@ const MainForm = () => {
       );
     }
 
-    // ตั้งค่าเริ่มต้นให้กับ service
     setservice('ไม่มีใบแนบ'); // ค่าเริ่มต้น
 
-    // ถ้า queueData มีค่า และ medicine_service เป็น 1
     if (queueData && Number(queueData.medicine_service) === 1) {
       setservice('มีใบแนบ');
     }
 
-    setId(queueData?.id); // ตั้งค่า id ใหม่
-    setIdEdit(queueData); // ตั้งค่า id edit ใหม่
-
+    setId(queueData?.id);
+    setIdEdit(queueData);
   };
 
   const handleupdatestatus = async () => {
@@ -315,7 +300,7 @@ const MainForm = () => {
   const Queue2 = generateNumbers(1, 800, 10); // เปลี่ยนเริ่มต้นจาก 0 เป็น 1
   // console.log('Q1', Queue1);
   // console.log('Q2', Queue2);
-
+  
   return (
 
     <>
@@ -330,18 +315,275 @@ const MainForm = () => {
         className="w-full"
         aria-label="Queue Type Tabs"
       >
-        <Tab key="2" title="ชั้น 2">
+        {/* <Tab key="A" title="A">
+          <h2 className="mb-2 text-center text-lg">คิวรับยาปกติ A</h2>
+          <div className="grid grid-cols-10 gap-2">
+            {Queue2.map(row =>
+              row.map((num) => {
+                const normalizedNum = num.toString().padStart(3, '0');
+                const queueItem = data?.find((item: any) => item.queue_code === normalizedNum && item.queue_type === 'A');
+                // console.log('num', num);
+                // console.log('num0', normalizedNum);
+
+                return (
+                  <Tooltip
+                    key={num}
+                    content={
+                      selectedA[Number(num)]
+                        ? `หมายเลข ${num}: ${selectedA[Number(num)]}`
+                        : ''
+                    }
+                    placement="top"
+                  >
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      className={`cursor-pointer rounded border p-2 text-center ${Number(num) === 0
+                        ? 'bg-gray-300 text-black'
+                        : selectedA[Number(num)] === 'จัดยาแล้ว'
+                          ? selectedA[Number(num)] === 'แนบใบสั่ง'
+                            ? 'border-pink-500 bg-green-500 text-white'
+                            : 'bg-green-500 text-white'
+                          : selectedA[Number(num)] === 'มีใบแนบ'
+                            ? 'bg-pink-500 text-white'
+                            : selectedA[Number(num)] === 'รอจับคู่ตะกร้า'
+                              ? 'bg-orange-200 text-black'
+                              : selectedA[Number(num)] === 'กำลังตรวจสอบ'
+                                ? 'bg-blue-500 text-white'
+                                : selectedA[Number(num)] === 'ยกเลิก'
+                                  ? 'bg-red-500 text-white'
+                                  : selectedA[Number(num)] === 'กำลังจัดยา'
+                                    ? 'bg-orange-500 text-white'
+                                    : 'border-gray-300'
+                        }`}
+                      onClick={() => Number(num) === 0 ? null : handleNumberClick(Number(num), 'A')}
+                      onKeyDown={(e) => {
+                        if ((e.key === 'Enter' || e.key === ' ') && Number(num) !== 0) {
+                          handleNumberClick(Number(num), 'A');
+                        }
+                      }}
+                    >
+                      <span className="block text-lg font-bold">
+                        {Number(num) === 0 ? 'เริ่ม' : num}
+                      </span>
+                      {queueItem?.lastDispense && (
+                        <span className="block text-xs text-gray-700">ั
+                          {TimeOnlyTH1(queueItem.lastDispense)}
+                        </span>
+                      )}
+                    </div>
+                  </Tooltip>
+                );
+              }),
+            )}
+          </div>
+        </Tab>
+
+
+        <Tab key="B" title="B">
+          <h2 className="mb-2 text-center text-lg">คิวรับยาปกติ A</h2>
+          <div className="grid grid-cols-10 gap-2">
+            {Queue1.map(row =>
+              row.map((num) => {
+                const normalizedNum = num.toString().padStart(3, '0');
+                const queueItem = data?.find((item: any) => item.queue_code.replace(/^F/, '') === normalizedNum && item.queue_type === 'B');
+                // console.log('num', num);
+                // console.log('num0', normalizedNum);
+
+                return (
+                  <Tooltip
+                    key={num}
+                    content={
+                      selectedB[Number(num)]
+                        ? `หมายเลข ${num}: ${selectedB[Number(num)]}`
+                        : ''
+                    }
+                    placement="top"
+                  >
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      className={`cursor-pointer rounded border p-2 text-center ${Number(num) === 0
+                        ? 'bg-gray-300 text-black'
+                        : selectedB[Number(num)] === 'จัดยาแล้ว'
+                          ? selectedB[Number(num)] === 'แนบใบสั่ง'
+                            ? 'border-pink-500 bg-green-500 text-white'
+                            : 'bg-green-500 text-white'
+                          : selectedB[Number(num)] === 'มีใบแนบ'
+                            ? 'bg-pink-500 text-white'
+                            : selectedB[Number(num)] === 'รอจับคู่ตะกร้า'
+                              ? 'bg-orange-200 text-black'
+                              : selectedB[Number(num)] === 'กำลังตรวจสอบ'
+                                ? 'bg-blue-500 text-white'
+                                : selectedB[Number(num)] === 'ยกเลิก'
+                                  ? 'bg-red-500 text-white'
+                                  : selectedB[Number(num)] === 'กำลังจัดยา'
+                                    ? 'bg-orange-500 text-white'
+                                    : 'border-gray-300'
+                        }`}
+                      onClick={() => Number(num) === 0 ? null : handleNumberClick(Number(num), 'B')}
+                      onKeyDown={(e) => {
+                        if ((e.key === 'Enter' || e.key === ' ') && Number(num) !== 0) {
+                          handleNumberClick(Number(num), 'B');
+                        }
+                      }}
+                    >
+                      <span className="block text-lg font-bold">
+                        {Number(num) === 0 ? 'เริ่ม' : num}
+                      </span>
+                      {queueItem?.lastDispense && (
+                        <span className="block text-xs text-gray-700">
+                        
+                          {TimeOnlyTH(queueItem.lastDispense)}
+                        </span>
+                      )}
+                    </div>
+                  </Tooltip>
+                );
+              }),
+            )}
+          </div>
+        </Tab>
+
+        <Tab key="C" title="C">
+          <h2 className="mb-2 text-center text-lg">คิวรับยาปกติ C</h2>
+          <div className="grid grid-cols-10 gap-2">
+            {Queue2.map(row =>
+              row.map((num) => {
+                const normalizedNum = num.toString().padStart(3, '0');
+                const queueItem = data?.find((item: any) => item.queue_code === normalizedNum && item.queue_type === 'C');
+                // console.log('num', num);
+                // console.log('num0', normalizedNum);
+
+                return (
+                  <Tooltip
+                    key={num}
+                    content={
+                      selectedC[Number(num)]
+                        ? `หมายเลข ${num}: ${selectedC[Number(num)]}`
+                        : ''
+                    }
+                    placement="top"
+                  >
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      className={`cursor-pointer rounded border p-2 text-center ${Number(num) === 0
+                        ? 'bg-gray-300 text-black'
+                        : selectedC[Number(num)] === 'จัดยาแล้ว'
+                          ? selectedC[Number(num)] === 'แนบใบสั่ง'
+                            ? 'border-pink-500 bg-green-500 text-white'
+                            : 'bg-green-500 text-white'
+                          : selectedC[Number(num)] === 'มีใบแนบ'
+                            ? 'bg-pink-500 text-white'
+                            : selectedC[Number(num)] === 'รอจับคู่ตะกร้า'
+                              ? 'bg-orange-200 text-black'
+                              : selectedC[Number(num)] === 'กำลังตรวจสอบ'
+                                ? 'bg-blue-500 text-white'
+                                : selectedC[Number(num)] === 'ยกเลิก'
+                                  ? 'bg-red-500 text-white'
+                                  : selectedC[Number(num)] === 'กำลังจัดยา'
+                                    ? 'bg-orange-500 text-white'
+                                    : 'border-gray-300'
+                        }`}
+                      onClick={() => Number(num) === 0 ? null : handleNumberClick(Number(num), 'C')}
+                      onKeyDown={(e) => {
+                        if ((e.key === 'Enter' || e.key === ' ') && Number(num) !== 0) {
+                          handleNumberClick(Number(num), 'C');
+                        }
+                      }}
+                    >
+                      <span className="block text-lg font-bold">
+                        {Number(num) === 0 ? 'เริ่ม' : num}
+                      </span>
+                      {queueItem?.lastDispense && (
+                        <span className="block text-xs text-gray-700">
+                          {TimeOnlyTH(queueItem.lastDispense)}
+                        </span>
+                      )}
+                    </div>
+                  </Tooltip>
+                );
+              }),
+            )}
+          </div>
+        </Tab>
+
+
+        <Tab key="D" title="D">
+          <h2 className="mb-2 text-center text-lg">คิวรับยาด่วน D</h2>
+          <div className="grid grid-cols-10 gap-2">
+            {Queue1.map(row =>
+              row.map((num) => {
+                const normalizedNum = num.toString().padStart(3, '0');
+                const queueItem = data?.find((item: any) => item.queue_code.replace(/^F/, '') === normalizedNum && item.queue_type === 'D');
+                // console.log('num', num);
+                // console.log('num0', normalizedNum);
+
+                return (
+                  <Tooltip
+                    key={num}
+                    content={
+                      selectedD[Number(num)]
+                        ? `หมายเลข ${num}: ${selectedD[Number(num)]}`
+                        : ''
+                    }
+                    placement="top"
+                  >
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      className={`cursor-pointer rounded border p-2 text-center ${Number(num) === 0
+                        ? 'bg-gray-300 text-black'
+                        : selectedD[Number(num)] === 'จัดยาแล้ว'
+                          ? selectedD[Number(num)] === 'แนบใบสั่ง'
+                            ? 'border-pink-500 bg-green-500 text-white'
+                            : 'bg-green-500 text-white'
+                          : selectedD[Number(num)] === 'มีใบแนบ'
+                            ? 'bg-pink-500 text-white'
+                            : selectedD[Number(num)] === 'รอจับคู่ตะกร้า'
+                              ? 'bg-orange-200 text-black'
+                              : selectedD[Number(num)] === 'กำลังตรวจสอบ'
+                                ? 'bg-blue-500 text-white'
+                                : selectedD[Number(num)] === 'ยกเลิก'
+                                  ? 'bg-red-500 text-white'
+                                  : selectedD[Number(num)] === 'กำลังจัดยา'
+                                    ? 'bg-orange-500 text-white'
+                                    : 'border-gray-300'
+                        }`}
+                      onClick={() => Number(num) === 0 ? null : handleNumberClick(Number(num), 'D')}
+                      onKeyDown={(e) => {
+                        if ((e.key === 'Enter' || e.key === ' ') && Number(num) !== 0) {
+                          handleNumberClick(Number(num), 'D');
+                        }
+                      }}
+                    >
+                      <span className="block text-lg font-bold">
+                        {Number(num) === 0 ? 'เริ่ม' : num}
+                      </span>
+                      {queueItem?.lastDispense && (
+                        <span className="block text-xs text-gray-700">
+                          {TimeOnlyTH(queueItem.lastDispense)}
+                        </span>
+                      )}
+                    </div>
+                  </Tooltip>
+                );
+              }),
+            )}
+          </div>
+        </Tab> */}
+
+<Tab key="2" title="ชั้น 2">
           <div className="grid grid-cols-2 gap-4">
             {/* คิวรับยาปกติ A (ฝั่งซ้าย) */}
             <div>
               <h2 className="mb-2 text-center text-lg">คิวรับยาปกติ A</h2>
-              <div className="grid grid-cols-10 gap-2 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10">
-                {Queue2.map((row) =>
+              <div className="grid grid-cols-10 gap-2">
+                {Queue2.map(row =>
                   row.map((num) => {
                     const normalizedNum = num.toString().padStart(3, '0');
-                    const queueItem = data?.find(
-                      (item: any) => item.queue_code === normalizedNum && item.queue_type === 'A'
-                    );
+                    const queueItem = data?.find((item: any) => item.queue_code === normalizedNum && item.queue_type === 'A');
 
                     return (
                       <Tooltip
@@ -356,9 +598,7 @@ const MainForm = () => {
                         <div
                           role="button"
                           tabIndex={0}
-                          className={`flex items-center justify-center cursor-pointer rounded border p-2 text-center ${getStatusClass(
-                            selectedA[Number(num)]
-                          )}`}
+                          className={`cursor-pointer rounded border p-2 text-center ${getStatusClass(selectedA[Number(num)])}`}
                           onClick={() => Number(num) === 0 ? null : handleNumberClick(Number(num), 'A')}
                           onKeyDown={(e) => {
                             if ((e.key === 'Enter' || e.key === ' ') && Number(num) !== 0) {
@@ -377,7 +617,7 @@ const MainForm = () => {
                         </div>
                       </Tooltip>
                     );
-                  })
+                  }),
                 )}
               </div>
             </div>
@@ -385,13 +625,11 @@ const MainForm = () => {
             {/* คิวรับยาด่วน B (ฝั่งขวา) */}
             <div>
               <h2 className="mb-2 text-center text-lg">คิวรับยาด่วน B</h2>
-              <div className="grid grid-cols-10 gap-2 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10">
-                {Queue1.map((row) =>
+              <div className="grid grid-cols-10 gap-2">
+                {Queue1.map(row =>
                   row.map((num) => {
                     const normalizedNum = num.toString().padStart(3, '0');
-                    const queueItem = data?.find(
-                      (item: any) => item.queue_code.replace(/^F/, '') === normalizedNum && item.queue_type === 'B'
-                    );
+                    const queueItem = data?.find((item: any) => item.queue_code.replace(/^F/, '') === normalizedNum && item.queue_type === 'B');
 
                     return (
                       <Tooltip
@@ -406,9 +644,7 @@ const MainForm = () => {
                         <div
                           role="button"
                           tabIndex={0}
-                          className={`flex items-center justify-center cursor-pointer rounded border p-2 text-center ${getStatusClass(
-                            selectedB[Number(num)]
-                          )}`}
+                          className={`cursor-pointer rounded border p-2 text-center ${getStatusClass(selectedB[Number(num)])}`}
                           onClick={() => Number(num) === 0 ? null : handleNumberClick(Number(num), 'B')}
                           onKeyDown={(e) => {
                             if ((e.key === 'Enter' || e.key === ' ') && Number(num) !== 0) {
@@ -427,25 +663,22 @@ const MainForm = () => {
                         </div>
                       </Tooltip>
                     );
-                  })
+                  }),
                 )}
               </div>
             </div>
           </div>
-
         </Tab>
         <Tab key="3" title="ชั้น 3">
           <div className="grid grid-cols-2 gap-4">
             {/* คิวรับยาปกติ C (ฝั่งซ้าย) */}
             <div>
               <h2 className="mb-2 text-center text-lg">คิวรับยาปกติ C</h2>
-              <div className="grid grid-cols-10 gap-2 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10">
-                {Queue2.map((row) =>
+              <div className="grid grid-cols-10 gap-2">
+                {Queue2.map(row =>
                   row.map((num) => {
                     const normalizedNum = num.toString().padStart(3, '0');
-                    const queueItem = data?.find(
-                      (item: any) => item.queue_code === normalizedNum && item.queue_type === 'C'
-                    );
+                    const queueItem = data?.find((item: any) => item.queue_code === normalizedNum && item.queue_type === 'C');
 
                     return (
                       <Tooltip
@@ -460,9 +693,7 @@ const MainForm = () => {
                         <div
                           role="button"
                           tabIndex={0}
-                          className={`flex items-center justify-center cursor-pointer rounded border p-2 text-center ${getStatusClass(
-                            selectedC[Number(num)]
-                          )}`}
+                          className={`cursor-pointer rounded border p-2 text-center ${getStatusClass(selectedC[Number(num)])}`}
                           onClick={() => Number(num) === 0 ? null : handleNumberClick(Number(num), 'C')}
                           onKeyDown={(e) => {
                             if ((e.key === 'Enter' || e.key === ' ') && Number(num) !== 0) {
@@ -481,7 +712,7 @@ const MainForm = () => {
                         </div>
                       </Tooltip>
                     );
-                  })
+                  }),
                 )}
               </div>
             </div>
@@ -489,13 +720,11 @@ const MainForm = () => {
             {/* คิวรับยาด่วน D (ฝั่งขวา) */}
             <div>
               <h2 className="mb-2 text-center text-lg">คิวรับยาด่วน D</h2>
-              <div className="grid grid-cols-10 gap-2 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10">
-                {Queue1.map((row) =>
+              <div className="grid grid-cols-10 gap-2">
+                {Queue1.map(row =>
                   row.map((num) => {
                     const normalizedNum = num.toString().padStart(3, '0');
-                    const queueItem = data?.find(
-                      (item: any) => item.queue_code.replace(/^F/, '') === normalizedNum && item.queue_type === 'D'
-                    );
+                    const queueItem = data?.find((item: any) => item.queue_code.replace(/^F/, '') === normalizedNum && item.queue_type === 'D');
 
                     return (
                       <Tooltip
@@ -510,9 +739,7 @@ const MainForm = () => {
                         <div
                           role="button"
                           tabIndex={0}
-                          className={`flex items-center justify-center cursor-pointer rounded border p-2 text-center ${getStatusClass(
-                            selectedD[Number(num)]
-                          )}`}
+                          className={`cursor-pointer rounded border p-2 text-center ${getStatusClass(selectedD[Number(num)])}`}
                           onClick={() => Number(num) === 0 ? null : handleNumberClick(Number(num), 'D')}
                           onKeyDown={(e) => {
                             if ((e.key === 'Enter' || e.key === ' ') && Number(num) !== 0) {
@@ -531,14 +758,17 @@ const MainForm = () => {
                         </div>
                       </Tooltip>
                     );
-                  })
+                  }),
                 )}
               </div>
             </div>
           </div>
-
         </Tab>
       </Tabs>
+
+
+
+
       {/* Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <ModalContent>

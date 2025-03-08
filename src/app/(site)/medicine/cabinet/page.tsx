@@ -260,6 +260,8 @@ const Page = () => {
   );
 
   const onSubmit = (values: z.infer<typeof FormSchema>) => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const userId = userInfo?.state?.userInfo?.id;
     edit
       ? updateApi?.mutateAsync({
         id,
@@ -267,6 +269,7 @@ const Page = () => {
         mqtt_topic: `${hospital}/${values.storage_station}/${
           values.storage_location
         }/${values.storage_position}`,
+        userId:userId,
       })
       : postApi?.mutateAsync(values);
   };

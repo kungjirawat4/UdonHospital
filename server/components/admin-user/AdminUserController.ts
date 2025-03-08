@@ -159,13 +159,6 @@ export default class AdminUserController extends BaseController {
 
 													{ user_arrang: { not: null } }
 												],
-												// OR: [
-												// { user_arrang: { not: null } },
-
-												// ],
-
-
-
 											}
 										},
 
@@ -175,7 +168,11 @@ export default class AdminUserController extends BaseController {
 						},
 
 					},
-					take: 5
+					take: 5,
+					// orderBy:{createdAt:'desc'}
+					orderBy: {
+						createdAt: 'desc',
+					}
 				}),
 
 				db.session.findMany({
@@ -197,8 +194,8 @@ export default class AdminUserController extends BaseController {
 								},
 								_count: {
 									select: {
-										queue: { where: { userId: { not: null } } },
-										prescription: { where: { userId: { not: null } } },
+										// queue: { where: { userId: { not: null } } },
+										// prescription: { where: { userId: { not: null } } },
 										arranged: {
 											where: {
 												userId: { not: null },
@@ -234,6 +231,12 @@ export default class AdminUserController extends BaseController {
 			if (!session && !users) throw new ApiError('Invalid user login', StatusCodes.BAD_REQUEST);
 			// const count = sqlSelect[0].count.toString();
 			// const countArr = countArrang[0].count.toString();
+			users.sort((a, b) => {
+				// คำนวณการจัดเรียงตามจำนวน `arranged`
+				const countA = a.user._count.arranged || 0;
+				const countB = b.user._count.arranged || 0;
+				return countB - countA; // เรียงจากมากไปน้อย
+			});
 			const response = {
 				session,
 				users,
@@ -543,7 +546,7 @@ export default class AdminUserController extends BaseController {
 		next: NextFunction,
 	): Promise<void> {
 		try {
-			const { NEXT_PUBLIC_APP_URL , NEXT_PUBLIC_API_URL  } = process.env;
+			const { NEXT_PUBLIC_APP_URL, NEXT_PUBLIC_API_URL } = process.env;
 			const { name, email, password, status, roleId } = await req.body;
 
 			const role =

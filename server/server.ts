@@ -92,20 +92,34 @@ function serverListening(): void {
 	);
 }
 
-// cron.schedule("* 59 20 * * 5", async function () {    // ทุกๆ 21.00 ของวันศุกร์
-// 	await Promise.all([
-// 		await axios.get(`${NEXT_PUBLIC_API_URL}/database/daily`) // ทำการสำรองข้อมูล
-// 			.then(async res => {
-// 				if (res.status === 200) {
-// 					db.$disconnect();
-// 				}
-// 			})
-// 			.catch(error => {
-// 				db.$disconnect();
-// 			}),
-// 	])
+cron.schedule("* 59 20 * * 1,2,3,4,5", async function () {    // ทุกๆ 21.00 ของวันศุกร์
+	await Promise.all([
+		await axios.get(`${NEXT_PUBLIC_API_URL}/database/daily`) // ทำการสำรองข้อมูล
+			.then(async res => {
+				if (res.status === 200) {
+					db.$disconnect();
+				}
+			})
+			.catch(error => {
+				db.$disconnect();
+			}),
+	])
 
-// })
+})
+cron.schedule("* 59 20 * * 6", async function () {    // ทุกๆ 21.00 ของวันเสาร์
+	await Promise.all([
+		await axios.get(`${NEXT_PUBLIC_API_URL}/database/delete`) // ทำการสำรองข้อมูล
+			.then(async res => {
+				if (res.status === 200) {
+					db.$disconnect();
+				}
+			})
+			.catch(error => {
+				db.$disconnect();
+			}),
+	])
+
+})
 
 // cron.schedule("*/20 * 1-20 * * 1,2,3,4,5", async function () {    // ทุกๆ 01.00-21.00 ของวันจันทร์-ศุกร์
 // 	await Promise.all([

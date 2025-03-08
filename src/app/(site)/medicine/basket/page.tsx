@@ -220,12 +220,15 @@ const Page = () => {
   );
 
   const onSubmit = (values: z.infer<typeof FormSchema>) => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const userId = userInfo?.state?.userInfo?.id;
     // eslint-disable-next-line ts/no-unused-expressions
     edit
       ? updateApi?.mutateAsync({
         id,
         ...values,
         name: `${values.qrCode} - ${values.basket_color}`,
+        userId:userId,
       })
       : postApi?.mutateAsync(values);
   };

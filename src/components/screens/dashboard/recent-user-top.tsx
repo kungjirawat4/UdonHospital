@@ -6,7 +6,10 @@ export const columns = [
   { name: "NAME", uid: "name" },
   { name: "ROLE", uid: "role" },
   // {name: "STATUS", uid: "status"},
-  { name: "WORKLOAD", uid: "workload" },
+  // { name: "WORKLOAD", uid: "workload" },
+  { name: "จัด", uid: "station" },
+  { name: "เช็ค", uid: "check" },
+  { name: "จ่าย", uid: "workloadss" },
   { name: "ERROR", uid: "workerror" },
   // {name: "LOGINTIME", uid: "logintime"},
 ];
@@ -39,13 +42,41 @@ export function RecentUserTop(data: any) {
             <p className="text-bold text-sm capitalize text-default-400">{user?.user?.role?.name}</p>
           </div>
         );
-      case "workload":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-sm capitalize">{user?.user?._count?.arranged},{user?.user?._count?.prescription},{user?.user?._count?.queue}</p>
-            <p className="text-bold text-sm capitalize text-default-400">จัด,เช็ค,จ่าย</p>
-          </div>
-        );
+      // case "workload":
+      //   return (
+      //     <div className="flex flex-col">
+      //       <p className="text-bold text-sm capitalize">{user?.user?._count?.arranged},{user?.user?._count?.prescription},{user?.user?._count?.queue}</p>
+      //       <p className="text-bold text-sm capitalize text-default-400">จัด,เช็ค,จ่าย</p>
+      //     </div>
+      //   );
+        case "station":
+          return (
+            <div className="flex flex-col">
+              <p className="text-bold text-sm capitalize">{user?.user?._count?.arranged}</p>
+              <p className="text-bold text-sm capitalize text-default-400">จัด</p>
+            </div>
+          );
+        case "check":
+          return (
+            <div className="flex flex-col">
+              <p className="text-bold text-sm capitalize">{user?.user?._count?.prescription}</p>
+              <p className="text-bold text-sm capitalize text-default-400">เช็ค</p>
+            </div>
+          );
+        case "workloadss":
+          return (
+            <div className="flex flex-col">
+              <p className="text-bold text-sm capitalize">{user?.user?._count?.queue}</p>
+              <p className="text-bold text-sm capitalize text-default-400">จ่าย</p>
+            </div>
+          );
+          // case "workerror":
+          // return (
+          //   <div className="flex flex-col">
+          //     <p className="text-bold text-sm capitalize">{user?.user?._count?.arranged}</p>
+          //     <p className="text-bold text-sm capitalize text-default-400">error</p>
+          //   </div>
+          // );
       // case "status":
       //   return (
       //     <Chip className="capitalize" color={statusColorMap[user?.user?.status]} size="sm" variant="flat">

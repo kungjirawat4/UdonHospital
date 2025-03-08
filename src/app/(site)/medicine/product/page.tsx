@@ -267,12 +267,15 @@ const ProdeuctPage = () => {
   );
 
   const onSubmit = (values: z.infer<typeof FormSchema>) => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const userId = userInfo?.state?.userInfo?.id;
     updateApi?.mutateAsync({
       id,
       ...values,
       medicineImage1: fileLink[0] ? fileLink[1] : getMedicine?.data?.drugObj[0]?.medicineImage1,
       medicineImage2: fileLink[1] ? fileLink[2] : getMedicine?.data?.drugObj[0]?.medicineImage2,
       medicineImage3: fileLink[2] ? fileLink[3] : getMedicine?.data?.drugObj[0]?.medicineImage3,
+      userId:userId,
     });
   };
 

@@ -68,6 +68,7 @@ export async function GET(
             vnCode: true,
             full_name: true,
             queue_code: true,
+            queue_type:true,
             medicine_total: true,
             urgent: true,
           },

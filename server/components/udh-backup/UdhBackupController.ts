@@ -32,6 +32,11 @@ export default class UdhBackupController extends BaseController {
                 handler: this.getDaily.bind(this),
             },
             {
+                path: '/delete',
+                method: 'get',
+                handler: this.getDailydelete.bind(this),
+            },
+            {
                 path: '/error',
                 method: 'get',
                 handler: this.getError.bind(this),
@@ -102,26 +107,6 @@ export default class UdhBackupController extends BaseController {
 
             ])
 
-            // await Promise.all([
-            //     db.arrangedBackup.deleteMany({
-            //         where: {
-            //             AND: [
-            //                 { createdAt: { gte: new Date(dayjsStartDate.format('YYYY-MM-DDTHH:mm:ss')) } },
-            //                 { createdAt: { lte: new Date(dayjsEndDate.format('YYYY-MM-DDTHH:mm:ss')) } },
-            //             ]
-            //         }
-            //     }),
-
-            //     db.prescriptionBackup.deleteMany({
-            //         where: {
-            //             AND: [
-            //                 { createdAt: { gte: new Date(dayjsStartDate.format('YYYY-MM-DDTHH:mm:ss')) } },
-            //                 { createdAt: { lte: new Date(dayjsEndDate.format('YYYY-MM-DDTHH:mm:ss')) } },
-            //             ]
-            //         }
-            //     }),
-            // ])
-
             if (prescription && arranged) {
                 await Promise.all([
                     prescription.map(async (item: any, index: number) => {
@@ -168,6 +153,8 @@ export default class UdhBackupController extends BaseController {
                                 firstIssTime: item.firstIssTime,
                                 lastDispense: item.lastDispense,
                                 lastDiff: Number(item.lastDiff),
+                                userconfirm: item.userconfirm, ///คนคอนเฟิมยา
+                                confirmTime: item.confirmTime, //เวลาตรวจเสร็จ
                                 dateQueue: item.dateQueue,
                                 createdAt: item.createdAt,
                                 updatedAt: item.updatedAt,
@@ -239,11 +226,59 @@ export default class UdhBackupController extends BaseController {
                     })
                 ])
             }
+            // await Promise.all([
+            //     db.arranged.deleteMany({
+            //         where: {
+            //             AND: [
+            //                 { createdAt: { gte: new Date(dayjsStartDate.format('YYYY-MM-DDTHH:mm:ss')) } },
+            //                 { createdAt: { lte: new Date(dayjsEndDate.format('YYYY-MM-DDTHH:mm:ss')) } },
+            //             ]
+            //         }
+            //     }),
 
+            //     db.prescription.deleteMany({
+            //         where: {
+            //             AND: [
+            //                 { createdAt: { gte: new Date(dayjsStartDate.format('YYYY-MM-DDTHH:mm:ss')) } },
+            //                 { createdAt: { lte: new Date(dayjsEndDate.format('YYYY-MM-DDTHH:mm:ss')) } },
+            //             ]
+            //         }
+            //     }),
+            // ])
 
             const response = {
                 prescription,
                 message: 'Daily backup database successfully',
+            }
+            res.locals.data = response;
+            // call base class method
+            super.send(res);
+        } catch (err) {
+            next(err);
+        }
+    }
+    /**
+  *
+  * @param req
+  * @param res
+  * @param nextprisma
+  */
+    public async getDailydelete(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        try {
+            const [prescription, arranged] = await Promise.all([
+                db.arranged.deleteMany({}),
+
+                db.prescription.deleteMany({}),
+            ])
+
+            const response = {
+                prescription,
+                arranged,
+                message: 'Daily delete database successfully',
             }
             res.locals.data = response;
             // call base class method

@@ -51,6 +51,7 @@ export default function HomeView() {
   const [session, setSession] = React.useState<any>([]);
 
   const [user, setUser] = React.useState<any>([]);
+  const [usererror, setUsererror] = React.useState<any>([]);
 
   const { userInfo } = useUserInfoStore((state) => state)
   React.useEffect(() => {
@@ -65,6 +66,7 @@ export default function HomeView() {
     socketClient.on('users', (arg) => {
       setUser(arg.users); // arg คือ data ที่มาจาก Server
       setSession(arg.session)
+      setUsererror(arg.userError)
     });
     return () => {
       // socketClient.off('config');
@@ -73,7 +75,8 @@ export default function HomeView() {
       // socketClient.disconnect();
     }
   }, [])
-  // console.log(user, session)
+  // console.log(user)
+  // console.log(usererror.user?._count?.arranged)
 
   const pies = {
     // title: {
@@ -653,7 +656,7 @@ export default function HomeView() {
           <div className="grid grid-cols-1 gap-4">
             <Card>
               <CardHeader>
-                <CardTitle>Maximum workload</CardTitle>
+                <CardTitle>ปริมาณงานสูงสุด</CardTitle>
                 {/* <CardDescription>
                 login ล่าสุด
               </CardDescription> */}
@@ -666,7 +669,7 @@ export default function HomeView() {
 
         </TabsContent>
         <TabsContent value="analytics" className="space-y-4">
-<PrescriptionPage />
+          <PrescriptionPage />
         </TabsContent>
         <TabsContent value="reports" className="space-y-4">
           <DrugPage />
