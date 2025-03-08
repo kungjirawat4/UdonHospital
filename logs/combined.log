@@ -6149,3 +6149,43 @@
 {"level":"info","message":"Listening on :::3000"}
 {"level":"info","message":"Listening on :::3000"}
 {"level":"info","message":"Listening on :::3000"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
+{"level":"error","message":"Unhandled Promise Rejection: reason:"}
+{"level":"error","message":"PrismaClientInitializationError: Can't reach database server at `172.16.2.254:5432`\n\nPlease make sure your database server is running at `172.16.2.254:5432`.\n    at t (/home/jirawatratsamee/Desktop/udh/UdonHospital/node_modules/@prisma/client/runtime/library.js:112:2473)"}
